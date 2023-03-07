@@ -1,170 +1,41 @@
 package veinthrough.test.async;
 
-import com.google.common.collect.ImmutableList;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import veinthrough.api.generic.Either;
-import veinthrough.test.AbstractUnitTester;
-import veinthrough.test.exception.StreamExceptionTest;
-import veinthrough.test.guava.ListenableFutureTest;
-import veinthrough.test.io.pipe.PipeTest;
-import veinthrough.test.io.pipe.Piper;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
-
-import static veinthrough.api._interface.CheckedFunction.liftWithValue;
-import static veinthrough.api.util.MethodLog.exceptionLog;
-import static veinthrough.api.util.MethodLog.methodLog;
+import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
- * @author veinthrough
- * <p>
- * This program demonstrates the how to submit/invoke tasks in thread pool.
- * <p>---------------------------------------------------------
- * <pre>
+ * APIs:
+ * 1. [非阻塞]{@link ExecutorService#shutdown()}:
+ * (1) 停止接收新的submit的任务；
+ * (2) 已经提交的任务（包括正在跑的和队列中等待的）,会继续执行完成；
+ * (3) 等到第(2)步完成后，才真正停止；
+ * 2. [阻塞]{@link ExecutorService#shutdownNow()}:
+ * (1) 跟 shutdown() 一样，先停止接收新submit的任务；
+ * (2) 忽略队列里等待的任务；
+ * (3) 尝试将正在执行的任务interrupt中断；
+ * (4) 返回未执行的任务列表；
+ * 【注意】它试图终止线程的方法是通过调用 Thread.interrupt() 方法来实现的，
+ * 这种方法的作用有限，如果线程中没有sleep 、wait、Condition、定时锁等应用,
+ * interrupt() 方法是无法中断当前的线程的。所以，shutdownNow() 并不代表线程池就一定立即就能退出，
+ * 它也可能必须要等待所有正在执行的任务都执行完成了才能退出。但是大多数时候是能立即退出的。
+ * 3. [阻塞]{@link ExecutorService#awaitTermination(long, TimeUnit)}:
+ * 【注意】awaitTermination() 后，可以继续提交任务, 当前线程阻塞，直到:
+ * (1) 等所有已提交的任务（包括正在跑的和队列中等待的）执行完；
+ * (2) 或者等超时时间到了（timeout 和 TimeUnit设定的时间）；
+ * (3) 或者线程被中断，抛出InterruptedException
+ * (4) 然后会监测 ExecutorService 是否已经关闭，返回true（shutdown请求后所有任务执行完毕）或false（已超时）
+ * 4. 关闭功能 【从强到弱】 依次是：shutdownNow() > shutdown() > awaitTermination()
+ * 5. [非阻塞]{@link ExecutorService#submit(Runnable, Object)}
+ * 6. 【注意】[阻塞]{@link ExecutorService#invokeAll(Collection)}为阻塞函数, 直到所有任务退出。
+ * 
  * Tests:
- * 1. Find all keyword matches in files of a directory:
- *   (1) by recursively submitting tasks
- *   提交任务: [递归]每个子目录重新通过thread pool提交任务,
- *   收集数据: [递归]累加Future.get()获取结果
- *   线程数量: 和directory数量相关
- *   @see ThreadPoolTest#wordMatchCountTest()
- *   (2) by recursively invoke FutureTasks
- *   提交任务: [递归]每个子目录重新通过new Thread提交任务,
- *   收集数据: [递归]累加Future.get()获取结果
- *   线程数量: 和directory数量相关
- *   @see FutureTest#wordMatchCountTest()
- *   (3) by fork-join framework
- *   提交任务: [递归]每个子目录重新通过ForkJoinTask.invokeAll提交任务,
- *   收集数据: [递归]累加task.join获取结果
- *   线程数量: 和directory数量相关
- *   @see ForkJoinTest#wordMatchCountTest()
- *   (4) [非递归] by Multi-threads co-work through BlockingQueue
- *   提交任务: [非递归]1个file enumeration task, 固定数量的search task
- *   收集数据: [非递归]累加search task's Future.get()获取结果
- *   线程数量: 固定数量, 更好的控制
- *   @see BlockingQueueTest#wordMatchCountTest()
- * 2. other tests:
- * @see InterruptTest
- * @see Piper
- * @see PipeTest
- * @see ListenableFutureTest
- * 3. Handle exception in Stream:
- * @see StreamExceptionTest
- * </pre>
+ * {@link WordCounter#byThreadPool()}
+ * {@link InterruptTest}
+ * {@link veinthrough.test.guava.ListenableFutureTest}
+ * {@link veinthrough.test.io.pipe.Piper}
+ * {@link veinthrough.test.io.pipe.PipeTest}
  */
-@Slf4j
-public class ThreadPoolTest extends AbstractUnitTester {
-    private static final String directory =
-            "D:\\Cloud\\Projects\\IdeaProjects\\veinthrough\\veinthrough-test\\src\\test\\java\\veinthrough\\test";
-    private static final String keyword = "AbstractUnitTester";
-    private static final ExecutorService pool = Executors.newCachedThreadPool();
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
-    @Test
-    public void wordMatchCountTest() throws ExecutionException, InterruptedException {
-        log.info(methodLog(
-                "Matches",
-                String.valueOf(
-                        pool
-                                .submit(new WordMatchCounter(0, new File(directory)))
-                                .get())));
-        log.info(methodLog(
-                "Largest pool size",
-                String.valueOf(((ThreadPoolExecutor) pool).getLargestPoolSize())));
-
-        pool.shutdown();
-    }
-
-    @SuppressWarnings({"Duplicates", "OptionalGetWithoutIsPresent"})
-    @AllArgsConstructor
-    public static class WordMatchCounter implements Callable<Integer> {
-        private static final boolean ALL_FILES = true;
-        private static final AtomicLong threadNum = new AtomicLong(1);
-        @Getter
-        private long id;
-        private List<File> files;
-        private boolean allFiles;
-
-        static long generateId() {
-            return threadNum.getAndIncrement();
-        }
-
-        WordMatchCounter(long id, List<File> files) {
-            this(id, files, false);
-        }
-
-        WordMatchCounter(long id, File directory) {
-            // noinspection ConstantConditions
-            this(id, ImmutableList.copyOf(directory.listFiles()));
-        }
-
-        @Override
-        public Integer call() throws InterruptedException {
-            int counter = 0;
-            if (files != null && files.size() != 0) {
-                if (allFiles) {
-                    counter = files.stream()
-                            .mapToInt(this::search)
-                            .sum();
-                } else {
-                    List<Callable<Integer>> tasks = new ArrayList<>();
-                    List<File> filesOfDir = new ArrayList<>();
-                    for (File file : files) {
-                        if (!file.isDirectory()) {
-                            filesOfDir.add(file);
-                        } else {
-                            // 添加任务, 每个子目录作为一个任务
-                            tasks.add(new WordMatchCounter(generateId(), file));
-                        }
-                    }
-                    // 添加任务, 所有子文件作为一个任务
-                    tasks.add(new WordMatchCounter(
-                            generateId(), filesOfDir, ALL_FILES));
-
-                    // 处理任务和收集数据
-                    // Exception方式2. CheckedException -> Either.left, 将忽略Exception并计算最终结果
-                    counter = pool.invokeAll(tasks).stream()
-                            // CheckedException -> Either.left
-                            .map(liftWithValue(Future::get))
-                            .filter(Either::isRight)
-                            .mapToInt(either -> (int) either.getRight().get())
-                            .sum();
-                }
-            }
-            log.info(methodLog(
-                    String.format("Thread %d: %d", getId(), counter)));
-            return counter;
-        }
-
-        Integer search(File file) {
-            int counter = 0;
-            try (Scanner in = new Scanner(file)) {
-                while (in.hasNextLine()) {
-                    String line = in.nextLine();
-                    if (line.contains(keyword)) counter++;
-                }
-            } catch (FileNotFoundException e) {
-                log.error(exceptionLog(e));
-            }
-            log.debug(methodLog(
-                    String.format("File %s: %d", file.getPath(), counter)));
-            return counter;
-        }
-    }
-
+@SuppressWarnings("unused")
+class ThreadPoolTest {
 }

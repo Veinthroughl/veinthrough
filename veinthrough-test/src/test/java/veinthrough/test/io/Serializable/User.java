@@ -1,21 +1,14 @@
 package veinthrough.test.io.Serializable;
 
+import lombok.*;
+import veinthrough.api.security.Encrypt;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import veinthrough.api.security.Encrypt;
-
 /**
- * @author veinthrough
- * <p>---------------------------------------------------------
- * <pre>
  * Tests:
  * 1. static/transient member will not automatically be written/read, you can manually handle it in writeObject/readObject.
  * password is a typical example for transient member which is handled manually.
@@ -26,8 +19,6 @@ import veinthrough.api.security.Encrypt;
  * 4. Handle the write/read procedure manually in writeObject/readObject.
  * 5. writeUTF   -- readUTF, will write length;
  *    writeChars -- readChar, will not write length, you should know the length before read.
- * </pre>
- *
  */
 @Data
 @AllArgsConstructor

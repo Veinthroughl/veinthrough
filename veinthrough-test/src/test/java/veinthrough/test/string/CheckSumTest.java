@@ -3,34 +3,29 @@ package veinthrough.test.string;
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import static com.google.common.base.Charsets.UTF_8;
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
-import static com.google.common.base.Charsets.UTF_8;
 
 /**
- * @author veinthrough
- * <p>
- * print a checksum of a file with new line character considered.
+ * Print a checksum of a file with new line character considered.
  * 1. read a file by line via readLine(), which will not read new line characters
  * 2. read a file by char via read(), which will read new line characters
- * Comments:
- * 1. newLine
+ * 3. newLine:
  * Windows: \r\n
  * Linux: \n
+ * 4. Stream.reduce()的使用方法: {@link veinthrough.test.stream.StreamTest}
  */
 @SuppressWarnings("UnstableApiUsage")
 @Slf4j
-public class CheckSumTest extends AbstractUnitTester {
+public class CheckSumTest {
     private static final String fileName = "checksum_test.txt";
     private static long checkSumOfNewLine = checkSum(System.getProperty("line.separator"));
-
-    @Override
-    public void test() {
-    }
 
     @Test
     public void checkSumByLineTest() {
@@ -73,7 +68,7 @@ public class CheckSumTest extends AbstractUnitTester {
                 - checkSumOfNewLine;
     }
 
-    public long checkSumByChar() throws IOException {
+    private long checkSumByChar() throws IOException {
         return checkSum(
                 Files.asCharSource(new File(fileName), UTF_8)
                         .read());

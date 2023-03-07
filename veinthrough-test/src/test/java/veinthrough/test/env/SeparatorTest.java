@@ -2,7 +2,6 @@ package veinthrough.test.env;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,17 +13,13 @@ import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
- * <p>
+ *
  * Display separator and path separator in different os,
  * and create a file named separator_test.txt based on the directory of class.
  */
 @Slf4j
-public class SeparatorTest extends AbstractUnitTester {
+public class SeparatorTest {
     private static final String fileName = "separator_test.txt";
-
-    @Override
-    public void test() {
-    }
 
     @Test
     public void separatorTest() {
@@ -34,7 +29,7 @@ public class SeparatorTest extends AbstractUnitTester {
                 "path separator", File.pathSeparator,
                 "path separator char", "" + File.pathSeparatorChar));
         // className.split(".") is not right
-        String absoluteFileName = "src\\test\\java\\" +
+        String absoluteFileName = "src\\methodReferenceTest\\java\\" +
                 // "\\.": 转义"."
                 // windows下File.separator为\, 需要Matcher.quoteReplacement(File.separator)获取
                 this.getClass().getName()
@@ -43,8 +38,8 @@ public class SeparatorTest extends AbstractUnitTester {
                         .replaceAll("\\.", Matcher.quoteReplacement(File.separator))
                 + fileName;
         try {
-            // [WINDOWS]only when directory "\com\veinthrough\test\env\SeparatorTest" exists, it will succeed.
-            // [LINUX]only when directory "/com/veinthrough/test/env/SeparatorTest" exists, it will succeed.
+            // [WINDOWS]only when directory "\com\veinthrough\methodReferenceTest\env\SeparatorTest" exists, it will succeed.
+            // [LINUX]only when directory "/com/veinthrough/methodReferenceTest/env/SeparatorTest" exists, it will succeed.
             if (new File(absoluteFileName).createNewFile()) {
                 log.info(methodLog(absoluteFileName + " created!"));
             } else {

@@ -1,14 +1,13 @@
 package veinthrough.test.io;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import veinthrough.test.nio.ByteBufTest;
+import veinthrough.test.nio.ByteCharBufferTest;
+
 import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
 import java.io.IOException;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
-import veinthrough.test.nio.ByteBufTest;
-import veinthrough.test.nio.ByteCharBufferTest;
 
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
@@ -18,8 +17,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * @see ByteCharBufferTest , from nio
  * @see ByteArrayStreamTest , from io
  * @see ByteBufTest , from Netty
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * constructors:
  * CharArrayReader(char buf[])
  * CharArrayReader(char buf[], int offset, int length)
@@ -29,9 +27,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *   The buffer capacity is initialized as the specified size
  *
  * [Attention]：no char array parameter in CharArrayWriter constructor.
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
  * 1. CharArrayReader/ByteArrayInputStream:
  *  1) CharArrayReader.ready()/ByteArrayInputStream.available();
@@ -44,9 +40,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *  2) toCharArray()/toByteArray()
  *  3) append(),append(CharSequence csq),append(CharSequence csq, int start, int end)/null
  * 3. CharArrayReader.ready()/CharArrayWriter.size()
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * Tests:
  * 1. write/append/read a single char
  * 2. write/append/read a specified size chars
@@ -60,18 +54,11 @@ import static veinthrough.api.util.MethodLog.methodLog;
  */
 @Slf4j
 @SuppressWarnings({"UnusedAssignment", "Duplicates"})
-public class CharArrayRWTest extends AbstractUnitTester {
+public class CharArrayRWTest {
 
     private static final char[] LETTER_CHAR_ARRAY = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g',
             'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
     private static final int SIZE_BLOCK = 5;
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
 
     @Test
     public void readTest() throws IOException {

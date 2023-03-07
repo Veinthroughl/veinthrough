@@ -1,30 +1,21 @@
 package veinthrough.test.io;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-
 import com.google.common.base.Charsets;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
+
+import java.io.*;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
- * <p>
  * InputStreamReader/OutputStreamWriter是字节流通向字符流的桥梁,它使用指定的charset读写字节并将其解码为字符.
  * 写入的时候, 会将写入的内容默认转换utf-8编码并写入,
  * 读取的时候, 会将内容默认转换成utf-8的内容转换成字节并读出来
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * constructors:
  * OutputStreamWriter(OutputStream out)
  * OutputStreamWriter(OutputStream out, String charsetName)
@@ -35,22 +26,20 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * InputStreamReader(InputStream out, String charsetName)
  * InputStreamReader(InputStream out, Charset cs)
  * InputStreamReader(InputStream out, CharsetEncoder enc)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
  * 1. InputStreamReader.ready()/ NO OutputStreamWriter.size()
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 2. {@link InputStreamReader#read(char[])}
+ * {@link InputStreamReader#read(char[], int, int)}
+ * {@link InputStreamReader#read(CharBuffer)}
+ *
  * Tests:
  * 1. Used different charsets in OutputStreamWriter/InputStreamReader
  * US_ASCII can't encoding 中文
- * </pre>
  */
 @SuppressWarnings("TryWithIdenticalCatches")
 @Slf4j
-public class StreamRWTest extends AbstractUnitTester {
+public class StreamRWTest {
     private static final String FILE_NAME = "stream_RW_test.txt";
     private static final int BUF_SIZE = 100;
     private static final Charset DEFAULT_CHARSET = Charset.defaultCharset();
@@ -58,13 +47,6 @@ public class StreamRWTest extends AbstractUnitTester {
     private static final Charset US_ASCII = Charset.forName(Charsets.US_ASCII.name());
     private static final Charset GB2312 = Charset.forName("GB2312");
     private static final Charset GBK = Charset.forName("GBK");
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
 
     @Test
     public void defaultCharsetTest() {

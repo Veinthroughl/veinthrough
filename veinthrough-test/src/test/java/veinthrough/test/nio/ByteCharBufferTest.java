@@ -3,7 +3,6 @@ package veinthrough.test.nio;
 import com.google.common.base.Charsets;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.test.io.ByteArrayStreamTest;
 import veinthrough.test.io.CharArrayRWTest;
 
@@ -15,6 +14,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
+ * 
  * ByteBuffer/CharBuffer are from nio
  * @see ByteArrayStreamTest , from io
  * @see CharArrayRWTest , from io
@@ -22,12 +22,8 @@ import static veinthrough.api.util.MethodLog.methodLog;
  */
 @Slf4j
 @SuppressWarnings("SameParameterValue")
-public class ByteCharBufferTest extends AbstractUnitTester {
+public class ByteCharBufferTest {
     private static final Charset UTF_8 = Charset.forName(Charsets.UTF_8.name());
-
-    @Override
-    public void test() {
-    }
 
     @Test
     public void charsetTest() {

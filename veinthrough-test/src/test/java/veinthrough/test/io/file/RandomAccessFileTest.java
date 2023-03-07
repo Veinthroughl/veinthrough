@@ -2,7 +2,6 @@ package veinthrough.test.io.file;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,11 +11,8 @@ import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
- * <p>
  * 有点像FileStream+DataStream+FileReader/FileWriter(readLine()其实是在BufferedReader里面)
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * constructors:
  * 1. RandomAccessFile(String name, String mode)
  * 2. RandomAccessFile(File file, String mode)
@@ -30,9 +26,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *  "rw"   打开以便读取和写入。
  *  "rws"  打开以便读取和写入。相对于 "rw"，"rws" 还要求对“文件的内容”或“元数据”的每个更新都同步写入到基础存储设备。
  *  "rwd"  打开以便读取和写入，相对于 "rw"，"rwd" 还要求对“文件的内容”的每个更新都同步写入到基础存储设备。
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
  * 1. getFilePointer():Returns the current offset in this file.
  * 2. skipBytes()
@@ -41,9 +35,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *  缩小：将会影响getFilePointer(), 如果缩小到比file pointer指向的更小的范围；
  *  扩展：扩展部分是undefined.
  * 5. readLine()
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * Tests:
  * 1. different dataType: r/rw
  * 2. writeChars()
@@ -51,19 +43,11 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * 4. getPointer()/length()/seek()/skipBytes()
  * 5. readLine()
  * 6. number of bytes of different basic types
- * </pre>
  */
 @Slf4j
-public class RandomAccessFileTest extends AbstractUnitTester {
+public class RandomAccessFileTest {
     private static final String fileName = "random_access_file_test.txt";
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
+    
     @Test
     public void createWriteTest() {
         cleanFile();

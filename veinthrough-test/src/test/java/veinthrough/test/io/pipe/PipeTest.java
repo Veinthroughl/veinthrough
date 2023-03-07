@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import veinthrough.api.async.LoopRunnable;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.test.guava.ListenableFutureTest;
 
 import java.io.IOException;
@@ -20,38 +19,26 @@ import static veinthrough.api.util.MethodLog.methodLog;
 /**
  * @author veinthrough
  *
- * <p>---------------------------------------------------------
- * <pre>
  * Tests:
  * 1. 写了1026个byte数据, 只读了1024个数据, 默认缓冲区大小为1024
  * 2. 写了1026个byte数据, 分次读取, 默认缓冲区大小为1024
  * 3. 写了1026个char数据, 只读了1024个数据, 默认缓冲区大小为1024
  * [?] char once最终会有IOException: Read end dead, 但是byte once没有
  * 4. 写了1026个char数据, 分次读取, 默认缓冲区大小为1024
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
  * 1. PipedInputStream/PipedOutputStream/PipedReader/PipedWriter
  * @see Piper
  * 2. ExecutorService线程池
  * @see ListenableFutureTest
- * </pre>
  */
 @Slf4j
-public class PipeTest extends AbstractUnitTester {
+public class PipeTest{
     private static final int INTERVAL = MILLIS_PER_SECOND;
     private static final boolean ONCE = false;
     private static final boolean CONTINUED = true;
     private Piper receiver = new Piper();
     private Piper sender = new Piper();
-
-    /* (non-Javadoc)
-     * @see veinthrough._test.UnitTester#_test()
-     */
-    @Override
-    public void test() {
-    }
 
     // 1. 写了1026个byte数据, 只读了1024个数据, 默认缓冲区大小为1024
     // [?] char once最终会有IOException: Read end dead, 但是byte once没有
@@ -99,7 +86,7 @@ public class PipeTest extends AbstractUnitTester {
                             if (receiver.finished()) finished += FINISH.RECEIVER_FINISHED.value;
                             log.debug(methodLog(FINISH.forValue(finished).toString()));
                         },
-                        // terminator
+                        // condition
                         () -> sender.finished() && receiver.finished(),
                         INTERVAL,
                         // finish

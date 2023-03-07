@@ -2,198 +2,144 @@ package veinthrough.test.collection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import veinthrough.api._interface.Identifiable;
 import veinthrough.api.collection.CollectionToMap;
-import veinthrough.api.collection.CollectionToMap.RETAIN_MANNER;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.test._class.Employee;
 import veinthrough.test._class.Manager;
 import veinthrough.test.guava.collection.MultiMapTest;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static veinthrough.api.collection.CollectionToMap.RETAIN_MANNER.RETAIN_FIRST;
-import static veinthrough.api.util.MethodLog.*;
+import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
- * <p>---------------------------------------------------------
- * <pre>
- * Tests:
- * 1. Key of Collectors.toMap()
- *   (1) use lambda String.charAt(0) as key
- *   (2) use Identifiable.getIdentifier() as key
- * 2. Value of Collectors.toMap()
- *   (1) item -> item
- *   (2) Function.identity()
- * 3. Duplicate key handling manner:
- *   (1) override, retain manner:
- *     <1> retain first
- *     <2> retain last
- *   (2) list
- * 4. Use Collectors.groupingBy: use list manner for duplicate key handling
- * 5. Use generic CollectionToMap:
- *   (1) non-identifiable + override + retain first/last
- *   @see CollectionToMap#toUniqueMap(Collection, Function, RETAIN_MANNER)
- *   (2) identifiable + override + retain first/last
- *   @see CollectionToMap#toUniqueMap(Collection, RETAIN_MANNER)
- *   (3) non-identifiable + list
- *   The same effect:
- *     <1> toListedMap(list, keyFunction)
- *     <2> Multimaps.index(list, keyFunction)
- *   @see CollectionToMap#toListedMap(Collection, Function)
- *   @see MultiMapTest#listToMapTest()
- *   (4) identifiable + list
- *   @see CollectionToMap#toListedMap(Collection)
- *   (5) use {@link Maps#uniqueIndex(Iterable, com.google.common.base.Function)}
- *   @see veinthrough.test.collection.TreeTest#treeMapTraverseTest
- *     1> Maps.uniqueIndex()/Multimaps.index(),
- *        @see CreationTest#mapTest()
- *        duplicate keys: IllegalArgumentException/to a list
- *     2> Maps.uniqueIndex()/CollectionToMap.toUniqueMap()
- *        @see CreationTest#mapTest()
- *        @see TreeTest#treeMapTraverseTest()
- *        改变顺序: 不改变顺序/CollectionToMap.toUniqueMap()中使用Stream/Collectors可能会改变元素顺序
- *        duplicate keys: IllegalArgumentException/RETAIN_MANNER
- * </pre>
+ * 1. 使用{@link Collectors#toMap}: {@link #byToMapTest()}
+ * 2. 使用{@link Collectors#groupingBy(Function)}: {@link #byGroupingByTest()},
+ * 对duplicate key的方式只能是list
+ * 3. 使用{@link CollectionToMap}: {@link #integrateTest()}
+ * 4. 使用{@link Multimaps#index}, 效果同{@link CollectionToMap#toListedMap}:
+ * {@link MultiMapTest#listToMapTest()}
+ * 也就是说对duplicate key的方式只能是list
+ * 5. 使用{@link Maps#uniqueIndex}:
+ * {@link MapTest#createFromKeysTest()}, {@link MapTest#createFromValuesTest()}
+ * {@link TreeMapTest#treeMapTraverseTest()}: CollectionToMap.toUniqueMap()中使用Stream/Collectors可能会改变元素顺序
+ * 出现duplicate keys: IllegalArgumentException
  */
 @Slf4j
-public class CollectionToMapTest extends AbstractUnitTester {
+public class CollectionToMapTest {
     private static final Employee worker = new Employee("src/main/java/veinthrough", 60000D);
     private static final Manager cfo =
             new Manager("Sid Sneaky", 800000D, 60000D);
     private static final Manager ceo =
             new Manager("Gus Greedy", 1000000D, 80000D);
 
-    @Override
-    public void test() {
-    }
-
     private List<String> getDataList() {
         return Lists.newArrayList("aardvark", "elephant", "koala", "eagle", "kangaroo");
     }
 
-    // 1.(1), 2.(1)
-    // duplicate key: error
-    // java.lang.IllegalStateException: Duplicate key elephant
+    /**
+     * 使用{@link Collectors#toMap}:
+     * {@link Collectors#toMap(Function keyMapper, Function valueMapper)},
+     * {@link Collectors#toMap(Function, Function, BinaryOperator mergeFunction)}
+     * {@link Collectors#toMap(Function, Function, BinaryOperator mergeFunction, Supplier mapSupplier)}
+     * 1. Key:
+     * (1) use lambda String.charAt(0) as key
+     * (2) use Identifiable.getIdentifier() as key
+     * 2. Value:
+     * (1) item -> item
+     * (2) Function.identity(), 实际上就是item -> item
+     * 3. Duplicate key:
+     * (1) error(java.lang.IllegalStateException: Duplicate key elephant)
+     * (2) override(retain first/last)
+     * (3) list, {@link Collectors#toMap}不能实现
+     */
     @Test
-    public void listToMapTest1() {
-        log.info(methodLog(
+    public void byToMapTest() {
+        // duplicate key: error(java.lang.IllegalStateException: Duplicate key elephant)
+        log.info(methodLog("" +
                 getDataList().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        str -> str.charAt(0),
-                                        str -> str))
-                        .toString()));
+                        .collect(Collectors.toMap(
+                                str -> str.charAt(0),
+                                str -> str))));
+        // duplicate key: error(java.lang.IllegalStateException: Duplicate key elephant)
+        log.info(methodLog("" +
+                getDataList().stream()
+                        .collect(Collectors.toMap(
+                                str -> str.charAt(0),
+                                Function.identity()))));   // identity()实际上就是t -> t
+        // duplicate key: override(retain first/last)
+        log.info(methodLog("" +
+                getDataList().stream()
+                        .collect(Collectors.toMap(
+                                str -> str.charAt(0),
+                                Function.identity(),
+                                (key1, key2) -> key2))));
+        // duplicate key: override(retain first/last)
+        // LinkedHashMap::new is the implementation of the map
+        log.info(methodLog("" +
+                getDataList().stream()
+                        .collect(Collectors.toMap(
+                                str -> str.charAt(0),
+                                Function.identity(),
+                                (key1, key2) -> key2,
+                                LinkedHashMap::new))));
     }
 
-    // 1.(1), 2.(2)
-    // duplicate key: error
-    // java.lang.IllegalStateException: Duplicate key elephant
+    /**
+     * 使用@link Collectors#groupingBy(Function)}:
+     * duplicate key: list
+     */
     @Test
-    public void listToMapTest2() {
-        log.info(methodLog(
+    public void byGroupingByTest() {
+        log.info(methodLog("" +
                 getDataList().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        str -> str.charAt(0),
-                                        Function.identity()))
-                        .toString()));
+                        .collect(Collectors.groupingBy(str -> str.charAt(0)))));
     }
 
-    // 1.(1), 2.(2), 3.(1).<2>
-    // duplicate key: override
+    /**
+     * 使用{@link CollectionToMap}
+     * 实际上CollectionToMap是综合{@link Collectors#toMap}/{@link Collectors#groupingBy(Function)},
+     * 同时还考虑了Collection元素为{@link Identifiable}时，keyFunction直接为{@link Identifiable#getIdentifier()},
+     * 另外注意实现中使用Stream/Collectors可能会改变元素顺序.
+     * 1. non-identifiable + override(retain first/last)
+     * 2. identifiable + override(retain first/last)
+     * 3. non-identifiable + list, 效果同{@link Multimaps#index}
+     * 4. identifiable + list, 效果同{@link Multimaps#index}
+     */
     @Test
-    public void listToMapTest3() {
-        log.info(methodLog(
-                "map",
-                getDataList().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        str -> str.charAt(0),
-                                        Function.identity(),
-                                        (key1, key2) -> key2))
-                        .toString()));
-    }
-
-    // duplicate key: list
-    // 1.(1), 3.(2), 3.
-    @Test
-    public void listToMapTest4() {
-        log.info(methodLog(
-                "map",
-                getDataList().stream()
-                        .collect(
-                                Collectors.groupingBy(
-                                        str -> str.charAt(0)))
-                        .toString()));
-    }
-
-    // 1.(1), 2.(2), 3.(1).<2>
-    // duplicate key: override
-    // LinkedHashMap::new is the implementation of the map, which can't affect duplicate key manipulation
-    @Test
-    public void listToMapTest5() {
-        log.info(methodLog(
-                "map",
-                getDataList().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        str -> str.charAt(0),
-                                        Function.identity(),
-                                        (key1, key2) -> key2,
-                                        LinkedHashMap::new))
-                        .toString()));
-    }
-
-    // 5.(1) non-identifiable + override + retain first/last
-    @Test
-    public void listToMapTest7() {
-        log.info(methodLog(
+    public void integrateTest() {
+        // non-identifiable + override(retain first/last)
+        log.info(methodLog(1,
                 CollectionToMap.toUniqueMap(
                         getDataList(),
                         str -> str.charAt(0),
                         RETAIN_FIRST)
-//                        RETAIN_LAST)
-                        .toString()
-        ));
-    }
-
-    // 5.(2) identifiable + override + retain first/last
-    @Test
-    public void listToMapTest9() {
-        log.info(methodLog(
+                        .toString()));
+        // identifiable + override(retain first/last)
+        log.info(methodLog(2,
                 CollectionToMap.toUniqueMap(
                         Lists.newArrayList(worker, ceo, cfo),
                         RETAIN_FIRST)
-//                        RETAIN_LAST)
-                        .toString()
-        ));
-    }
-
-    // 5.(3) non-identifiable + list
-    @Test
-    public void listToMapTest6() {
-        log.info(methodLog(
+                        .toString()));
+        // non-identifiable + list
+        log.info(methodLog(3,
                 CollectionToMap.toListedMap(
                         getDataList(),
                         str -> str.charAt(0))
-                        .toString()
-        ));
-    }
-
-    // 5.(4) identifiable + list
-    @Test
-    public void listToMapTest8() {
-        log.info(methodLog(
+                        .toString()));
+        // identifiable + list
+        log.info(methodLog(4,
                 CollectionToMap.toListedMap(
                         Lists.newArrayList(worker, ceo, cfo))
-                        .toString()
-        ));
+                        .toString()));
     }
 }

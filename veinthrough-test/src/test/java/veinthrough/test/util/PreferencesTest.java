@@ -2,63 +2,47 @@ package veinthrough.test.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.InvalidPreferencesFormatException;
-import java.util.prefs.Preferences;
+import java.util.prefs.*;
 
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
- * <p>
- * Test for Preferences.
- * @see PropertiesTest
- * <p>---------------------------------------------------------
- * <pre>
- * Properties:
- * 1. 没有标准的为配置文件命名的规则，容易造成配置文件名冲突。
- * 2. （似乎）只能处理字符串类型
- * Preferences:
- * 1. 可以处理其他类型
- * 2. 提供了一个与平台无关的中心知识库，类似注册表，其实就是用注册表实现的
- * 3. 可以像日志一样每个类可以有一个单独的节点
- * 4. 可以有change listener
- * 5. 不及时清理/维护，会导致中心知识库膨胀
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 1. Properties: {@link PropertiesTest}
+ * (1) 没有标准的为配置文件命名的规则，容易造成配置文件名冲突。
+ * (2) （似乎）只能处理字符串类型
+ * 2. Preferences:
+ * (1) 可以处理其他类型
+ * (2) 提供了一个与平台无关的中心知识库，类似注册表，其实就是用注册表实现的
+ * (3) 可以像日志一样每个类可以有一个单独的节点
+ * (4) 可以有change listener
+ * (5) 不及时清理/维护，会导致中心知识库膨胀
+ *
  * Warning/Error:
  * 1. WARNING: Could not open/create prefs root node Software\JavaSoft\Prefs at root 0x80000002.
- *  Windows RegCreateKeyEx(...) returned error code 5.
- *  解决办法：运行注册表regedit.exe，进入HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft，
- *  右击JavaSoft目录，选择新建->项（key），命名为Prefs
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * Windows RegCreateKeyEx(...) returned error code 5.
+ * 解决办法：运行注册表regedit.exe，进入HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft，
+ * 右击JavaSoft目录，选择新建->项（key），命名为Prefs
+ *  
  * Constructs/APIs:
- *  Preferences systemNodeForPackage(Class<?> c)
- *  Preferences userNodeForPackage(Class<?> c)
- *  addPreferenceChangeListener(PreferenceChangeListener pcl)
- *  addNodeChangeListener(NodeChangeListener ncl)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * {@link Preferences#systemNodeForPackage(Class c)}
+ * {@link Preferences#userNodeForPackage(Class c)}
+ * {@link Preferences#addPreferenceChangeListener(PreferenceChangeListener)}
+ * {@link Preferences#addNodeChangeListener(NodeChangeListener)}
+ *
  * Tests:
  * 1. get/put
  * 2. load/store
  * 3. get时可以给一个默认值来实现默认属性
- * </pre>
  */
 @SuppressWarnings("Duplicates")
 @Slf4j
-public class PreferencesTest extends AbstractUnitTester {
+public class PreferencesTest {
     private static final String DIR_NAME = "preferences";
     private static final String FILE_NAME = "preferences_test.xml";
     private static final int DEFAULT_LEFT = 0;
@@ -74,13 +58,6 @@ public class PreferencesTest extends AbstractUnitTester {
     private String t;
 
     private Preferences preference = Preferences.userNodeForPackage(getClass());
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
 
     @Test
     public void preferencesTest() throws IOException {
@@ -122,7 +99,9 @@ public class PreferencesTest extends AbstractUnitTester {
         }
     }
 
-    // can only put string
+    /**
+     * can only put string
+     */
     private void modify() {
         x += 1;
         preference.put("left", "" + x);

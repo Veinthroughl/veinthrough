@@ -1,21 +1,9 @@
 package veinthrough.test.guava;
 
-import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
-
 /**
  * How to use guava splitter.
- * @see SourceAndSinkTest#readTest()
+ * {@link SourceAndSinkTest#readTest()}
  */
-public class SplitterTest extends AbstractUnitTester {
-    @Override
-    public void test() {
-    }
-
-    /**
-     * @see SourceAndSinkTest#readTest()
-     */
-    @Test
-    public void splitterTest() {
-    }
+@SuppressWarnings("unused")
+public class SplitterTest{
 }

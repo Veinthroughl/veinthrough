@@ -2,7 +2,6 @@ package veinthrough.test.io;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.test.io.file.RandomAccessFileTest;
 
 import java.io.*;
@@ -14,8 +13,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
 /**
  * @author veinthrough
  * @see BufferedStreamTest
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * constructors:
  * BufferedReader(Reader in)
  *  default buffer size:8192
@@ -23,9 +21,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * BufferedWriter(Writer out, int size)
  *  default buffer size:8192
  * BufferedWriter(Writer out, int size)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * APIs:
  * 1. BufferedWriter.newLine()/BufferedReader.readLine()
  * 2. BufferedReader.ready()/BufferedInputStream.available()
@@ -37,21 +33,18 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * 4. BufferedReader.lines()
  *  Java1.8才加入，返回Stream<String>支持流式操作
  * 5. BufferedReader.mark()/BufferedReader.reset()
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * Tests:
  * 1. write and read[很奇怪和BufferedStreamTest的运行结果不一样]
  * 2. write then flush and read
  * 3. mark/reset in read, [BufferedInputStream/BufferedReader/ByteArrayInputStream/CharArrayReader]
  * @see ByteArrayStreamTest#readTest()
  * @see CharArrayRWTest#readTest()
- * 4. readLine test
+ * 4. readLine methodReferenceTest
  * @see RandomAccessFileTest
- * </pre>
  */
 @Slf4j
-public class BufferedRWTest extends AbstractUnitTester {
+public class BufferedRWTest {
 
     private static final char[] LETTER_CHAR_ARRAY = new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g',
             'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
@@ -60,14 +53,7 @@ public class BufferedRWTest extends AbstractUnitTester {
     private static final boolean FULL_FLUSH = false, MANUAL_FLUSH = true;
     private static final String fileName = "buffered_RW_test.txt";
 
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
-    /*
+    /**
      5 chars Written: abcde
      5 chars Written: fghij
      5 chars Written: klmno
@@ -79,7 +65,7 @@ public class BufferedRWTest extends AbstractUnitTester {
         _test(FULL_FLUSH);
     }
 
-    /*
+    /**
      5 chars Written: abcde
      5 chars read: abcde
      5 chars Written: fghij

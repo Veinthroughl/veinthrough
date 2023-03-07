@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import veinthrough.api.util.DateFormatUtils;
-import veinthrough.test.AbstractUnitTester;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,46 +19,38 @@ import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
  * 1. mkdir()/mkdirs():
- * mkdir(): parent must be existed.
- * 2. mkdir()/createNewFile():
- * if parent doesn't exist, mkdir() return false while createNewFile() throw IOException().
- * 3. createNewFile():最好是和exists()一起用
+ * {@link File#mkdir()}: parent must be existed
+ * {@link File#mkdirs()} : create dirs including non-existed parent dir
+ * 2. {@link File#createNewFile()}: 最好是和exists()一起用
  * return true if the named file does not exist and was successfully created;
  * return false if the named file already exists;
  * return exception if the parent directory isn't existed
- * 4. File(String)/File(URI):
- *   File(String) can handle both "\" and "/";
- *   URI can't handle "\", but only "/".
- *  </pre>
- * <p>---------------------------------------------------------
- * <pre>
- * Test contans:
- * 1. print separator.
- * 2. create directory.
- * 3. create sub directory.
- * 4. create file.
- * 5. list files in a directory.
- * 6. print file info.
- * 7. file descriptor
- * @see FileDescriptorTest#standFDTest()
- * </pre>
+ * 3. mkdir()/createNewFile(): if parent doesn't exist,
+ * {@link File#mkdir()} return false
+ * {@link File#createNewFile()} throw IOException().
+ * 4. File(String)/File(URI),
+ * {@link File#File(String)}: can handle both "\" and "/";
+ * {@link File#File(URI)}: URI can't handle "\", but only "/".
+ * 5. 相对路径: path --> [project_path]/path
+ * test_file/dir2 --> D:\Cloud\Projects\IdeaProjects\veinthrough\veinthrough-methodReferenceTest\test_file\dir2
+ *
+ * Tests:
+ * Print separator.
+ * Create directory.
+ * Create sub directory.
+ * Create file.
+ * List files in a directory.
+ * Print file info.
+ * File descriptor test: {@link FileDescriptorTest}
  */
 @SuppressWarnings({"unused", "ResultOfMethodCallIgnored"})
 @Slf4j
-public class FileTest extends AbstractUnitTester {
+public class FileTest {
     private static final TimeZone SHANG_HAI = TimeZone.getTimeZone("Asia/Shanghai");
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS z";
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
 
     @Test
     public void separatorTest() {
@@ -72,8 +63,10 @@ public class FileTest extends AbstractUnitTester {
                 "File.separatorChar", String.valueOf(File.separatorChar)));
     }
 
-    // mkdir, parent must be existed
-    // mkdirs: create dirs including non-existed parent dir
+    /**
+     * {@link File#mkdir()}: parent must be existed
+     * {@link File#mkdirs()} : create dirs including non-existed parent dir
+     */
     @Test
     public void createDirTest() {
         // mkdir, parent must be existed
@@ -85,13 +78,17 @@ public class FileTest extends AbstractUnitTester {
         // mkdir, parent must be existed
         try {
             // should be "file:/E:" instead of "file:E:"
-            File dir3 = new File(new URI("file:/E:/test/dir3"));
+            File dir3 = new File(new URI("file:/E:/methodReferenceTest/dir3"));
             dir3.mkdir();
         } catch (URISyntaxException e) {
             log.warn(exceptionLog(e));
         }
     }
 
+    /**
+     * {@link File#mkdir()}: parent must be existed
+     * {@link File#mkdirs()} : create dirs including non-existed parent dir
+     */
     @Test
     public void createSubDirTest() {
         File sub1 = new File("src/main/java/veinthrough", "dir1");
@@ -106,17 +103,25 @@ public class FileTest extends AbstractUnitTester {
 
         try {
             // should be "file:/E:" instead of "file:E:"
-            File dir4 = new File(new URI("file:/E:/test/dir4"));
+            File dir4 = new File(new URI("file:/E:/methodReferenceTest/dir4"));
             dir4.mkdirs();
         } catch (URISyntaxException e) {
             log.warn(exceptionLog(e));
         }
     }
 
-    // true if the named file does not exist and was successfully created;
-    // false if the named file already exists
-    // exception if the parent directory isn't existed
-    // parent directory must be existed
+    /**
+     * 1. {@link File#createNewFile()}:
+     * (1) true if the named file does not exist and was successfully created;
+     * (2) false if the named file already exists
+     * (3) exception if the parent directory isn't existed, parent directory must be existed
+     * 2. {@link File#mkdir()}/{@link File#createNewFile()}:
+     * (1) 最好和{@link File#exists()}一起使用
+     * (2) if parent doesn't exist,
+     * {@link File#mkdir()} return false
+     * {@link File#createNewFile()} throw IOException().
+     */
+
     @Test
     public void createFileTest() throws IOException, URISyntaxException {
         File file1 = new File("test_file/file1.txt");
@@ -126,7 +131,7 @@ public class FileTest extends AbstractUnitTester {
         file2.createNewFile();
 
         File dir = new File("test_file");
-        // filePath = ...\veinthrough\test\test\file3.txt
+        // filePath = ...\veinthrough\methodReferenceTest\methodReferenceTest\file3.txt
         // File(String) can handle both "\" and "/"
         String filePath = dir.getAbsolutePath() + File.separator + "file3.txt";
         File file3 = new File(filePath);
@@ -135,7 +140,7 @@ public class FileTest extends AbstractUnitTester {
             file3.createNewFile();
         }
 
-        // filePath = file:\...\veinthrough\test\test\file4.txt
+        // filePath = file:\...\veinthrough\methodReferenceTest\methodReferenceTest\file4.txt
         filePath = "file:\\" + dir.getAbsolutePath() + File.separator + "file4.txt";
         // URI can't handle "\", but only "/"
         filePath = filePath.replace("\\", "/");
@@ -143,7 +148,7 @@ public class FileTest extends AbstractUnitTester {
         // URI uri = new URL(filePath).toURI();
         file4.createNewFile();
 
-        // filePath = file:\...\veinthrough\test\test\file4.txt
+        // filePath = file:\...\veinthrough\methodReferenceTest\methodReferenceTest\file4.txt
         filePath = "file:\\" + dir.getAbsolutePath() + File.separator + "file5.txt";
         // the same effect
         // filePath = "file:/" + dir.getAbsolutePath() + File.separator + "file5.txt";
@@ -152,6 +157,11 @@ public class FileTest extends AbstractUnitTester {
         file5.createNewFile();
     }
 
+    /**
+     * {@link File#exists()}
+     * {@link File#isDirectory()}
+     * {@link File#listFiles()}
+     */
     @Test
     public void listFilesTest() throws IOException {
         File dir = new File("test_file");
@@ -171,11 +181,14 @@ public class FileTest extends AbstractUnitTester {
         }
     }
 
-    @Test
-    public void fdTest() {
-        new FileDescriptorTest().standFDTest();
-    }
-
+    /**
+     * File info:
+     * {@link File#getParent()}
+     * {@link File#getPath()}
+     * {@link File#getAbsolutePath()}
+     * {@link File#getCanonicalPath()}
+     * {@link File#lastModified()}
+     */
     private String fileInfo(File file) throws IOException {
         return String.format("    parent:%s\n"
                         + "    path:%s\n"

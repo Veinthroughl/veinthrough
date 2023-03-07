@@ -1,0 +1,5 @@
+理解:
+1. FileDescriptor为打开的文件, 一般在操作系统中都有一个文件描述符(编号)
+ FileDescriptor  <-->  FileStream, 因为FileStream为字节流/底层流
+ FileDescriptor  -->  FileRW
+2. File为磁盘中的文件/目录

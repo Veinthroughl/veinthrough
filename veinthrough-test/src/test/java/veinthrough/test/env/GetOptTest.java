@@ -2,11 +2,11 @@ package veinthrough.test.env;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.api.lang.GetOpt;
 import veinthrough.api.lang.GetOptDesc;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static veinthrough.api.util.Constants.BLANK1;
@@ -17,22 +17,14 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * <pre>UNIX sort options: sort -n -o outfile infile1 infile2</pre>
  * which means: sort numerically (-n), writing to file "outfile" (-o
  * outfile), sort from infile1 and infile2.
- * <p>
- * tests:
- * <p>
- * java environ.GetOptTest -M
- * <p>
- * java environ.GetOptTest -n a b c
- * <p>
- * java environ.GetOptTest -numeric a b c
- * <p>
- * java environ.GetOptTest -numeric -output-file /tmp/foo a b c
- * <p>
  *
- * @author veinthrough
+ * java environ.GetOptTest -M
+ * java environ.GetOptTest -n a b c
+ * java environ.GetOptTest -numeric a b c
+ * java environ.GetOptTest -numeric -output-file /tmp/foo a b c
  */
 @Slf4j
-public class GetOptTest extends AbstractUnitTester {
+public class GetOptTest {
     private static final String command1 = "app -n -o a.txt b.txt c.txt";
     private static final String command2 = "app -n a.txt b.txt c.txt";
     private static final String command3 = "app -o a.txt b.txt c.txt";
@@ -42,10 +34,6 @@ public class GetOptTest extends AbstractUnitTester {
     private static final GetOptDesc[] options = {
             new GetOptDesc('n', "numeric", false),
             new GetOptDesc('o', "output-file", true)};
-
-    @Override
-    public void test() {
-    }
 
     @Test
     public void getOptTest() {

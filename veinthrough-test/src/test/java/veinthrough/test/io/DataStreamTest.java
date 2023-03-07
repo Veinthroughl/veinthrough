@@ -1,23 +1,14 @@
 package veinthrough.test.io;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
+
+import java.io.*;
 
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author venthrough
- * <p>---------------------------------------------------------
- * <pre>
  * 1. please refer to document --Java IO Summary--
  * 2. DataInputStream extends FilterInputStream
  * 3. DataInputStream/DataOutputStream with ObjectInputStream/ObjectOutputStream:
@@ -26,42 +17,27 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *  3) ObjectInputStream has readObject();
  *     ObjectOutputStream has writeObject().
  * 4. writeUTF -- readUTF, will write/read length as UTF contains length.
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * constructors:
  * DataInputStream(InputStream in)
  * DataOutputStream(OutputStream out)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
  * 1. NO DataInputStream.available().
  * 2. DataOutputStream.size():
  *  the number of bytes written to this data output stream so far.
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * Tests:
  * 1. read/write basic types
  * 2. writeUTF()/readUTF()
- * </pre>
  */
 @Slf4j
 @SuppressWarnings("TryWithIdenticalCatches")
-public class DataStreamTest extends AbstractUnitTester {
+public class DataStreamTest {
     private static final String FILE_NAME = "data_stream_test.txt";
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
     @Test
     public void writeTest() {
-        // located in classpath: .../veinthrough/test
+        // located in classpath: .../veinthrough/methodReferenceTest
         // the upper level path of src/main/java
         try (DataOutputStream dos = new DataOutputStream(
                 new FileOutputStream(FILE_NAME))) {

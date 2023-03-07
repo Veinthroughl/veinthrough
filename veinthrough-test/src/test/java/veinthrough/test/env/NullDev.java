@@ -1,29 +1,23 @@
 package veinthrough.test.env;
 
-import java.io.File;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
+
+import java.io.File;
 
 import static veinthrough.api.util.Constants.*;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
- * <p>
+ *
  * Get null dev of different OS:
  * Linux: /dev/null
  * Windows: NUL:
  * Others: jnk
  */
 @Slf4j
-public class NullDev extends AbstractUnitTester {
-
-    @Override
-    public void test() {
-    }
-
+public class NullDev {
     @Test
     public void nullDevTest() {
         log.info(methodLog("Null dev", getNullDev()));

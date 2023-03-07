@@ -2,7 +2,6 @@ package veinthrough.test.io;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.test.nio.ByteBufTest;
 import veinthrough.test.nio.ByteCharBufferTest;
 
@@ -10,15 +9,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static veinthrough.api.util.MethodLog.*;
+import static veinthrough.api.util.MethodLog.exceptionLog;
+import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
  * @see ByteCharBufferTest, from nio
  * @see CharArrayRWTest , from io
  * @see ByteBufTest, from Netty
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * constructors:
  * ByteArrayInputStream(byte buf[])
  * ByteArrayInputStream(byte buf[], int offset, int length)
@@ -28,9 +27,7 @@ import static veinthrough.api.util.MethodLog.*;
  *   The buffer capacity is initialized as the specified size
  *
  * [Attention]：no byte array parameter in ByteArrayOutputStream constructor.
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * APIs:
  * 1. ByteArrayInputStream.available()/ByteArrayOutputStream.size()
  * 2. [input] markSupported()
@@ -46,9 +43,7 @@ import static veinthrough.api.util.MethodLog.*;
  * 8. [input] available()
  * 只有stream才有available(); reader没有available(), 只有ready()
  * [BufferedInputStream/BufferedReader/ByteArrayInputStream/CharArrayReader]
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * Tests:
  * 1. write/read a single byte
  * 2. write/read a specified size bytes
@@ -56,11 +51,10 @@ import static veinthrough.api.util.MethodLog.*;
  * @see ByteArrayStreamTest#readTest()
  * 4. write: convert to a byte array
  * 5. write: write to another output stream
- * </pre>
  */
 @Slf4j
 @SuppressWarnings({"UnusedAssignment", "Duplicates"})
-public class ByteArrayStreamTest extends AbstractUnitTester {
+public class ByteArrayStreamTest {
 
     // correspond to "abcdefghijklmnopqrsttuvwxyz"
     private static final byte[] lettersByteArray = new byte[]{
@@ -68,13 +62,6 @@ public class ByteArrayStreamTest extends AbstractUnitTester {
             0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A
     };
     private static final int SIZE_BLOCK = 5;
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
 
     @Test
     public void readTest() {

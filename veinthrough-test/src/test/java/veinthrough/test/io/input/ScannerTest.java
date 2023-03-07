@@ -1,7 +1,7 @@
 package veinthrough.test.io.input;
 
 import lombok.extern.slf4j.Slf4j;
-import veinthrough.test.AbstractUnitTester;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,15 +13,10 @@ import static veinthrough.api.util.MethodLog.methodLog;
 /**
  * @author veinthrough
  *
- * <p>---------------------------------------------------------
- * <pre>
  * Tests:
  * 1. standard input test.
  * 2. file input test with next()/ nextInt().
  * 3. file input test with nextLine()
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
  * 1. next() compared with nextLine():
  *   (1) next() will trim whitespace before the valid chars.
  *   (2) next() treat whitespace as spliter.
@@ -34,23 +29,16 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *   public static void main() method is required for the correct console to appear,
  *   otherwise will only result in a console that doesn't receive inputs.
  *   (2) Junit test的file路径相对module的classpath, main()的file路径相对project的classpath, 如[test_file/scanner_test.txt]:
- *   如果使用Junit, 绝对路径为[...\IdeaProjects\test(project)\test_file\scanner_test.txt]
- *   如果使用main(), 绝对路径为[...\IdeaProjects\test(project)\veinthrough-test(module)\test_file\scanner_test.txt]
- * </pre>
+ *   如果使用Junit, 绝对路径为[...\IdeaProjects\methodReferenceTest(project)\test_file\scanner_test.txt]
+ *   如果使用main(), 绝对路径为[...\IdeaProjects\methodReferenceTest(project)\veinthrough-methodReferenceTest(module)\test_file\scanner_test.txt]
  */
 @Slf4j
-public class ScannerTest extends AbstractUnitTester {
+public class ScannerTest {
     private static final String fileName = "test_file/scanner_test.txt";
 
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
-    // standard input test
-    private void stdInputTest() {
+    // standard input methodReferenceTest
+    @Test
+    public void stdInputTest() {
         // try with resource
         // automatically release resource
         try (Scanner in = new Scanner(System.in)) {
@@ -65,8 +53,9 @@ public class ScannerTest extends AbstractUnitTester {
         }
     }
 
-    // file input test with next()/ nextInt()
-    private void fileNextIntTest() {
+    // file input methodReferenceTest with next()/ nextInt()
+    @Test
+    public void fileNextIntTest() {
         try (Scanner in = new Scanner(new File(fileName))) {
             while (in.hasNext()) {
                 if (in.hasNextInt()) {
@@ -80,8 +69,9 @@ public class ScannerTest extends AbstractUnitTester {
         }
     }
 
-    // file input test with nextLine()
-    private void fileNextLineTest() {
+    // file input methodReferenceTest with nextLine()
+    @Test
+    public void fileNextLineTest() {
         try (Scanner in = new Scanner(new File(fileName))) {
             int line = 0;
             while (in.hasNextLine()) {
@@ -90,13 +80,5 @@ public class ScannerTest extends AbstractUnitTester {
         } catch (FileNotFoundException e) {
             log.error(exceptionLog(e));
         }
-    }
-
-    public static void main(String[] args) {
-        ScannerTest tester = new ScannerTest();
-
-        tester.stdInputTest();
-        tester.fileNextIntTest();
-        tester.fileNextLineTest();
     }
 }

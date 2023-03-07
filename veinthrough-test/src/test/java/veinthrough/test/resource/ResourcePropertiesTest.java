@@ -1,32 +1,30 @@
 package veinthrough.test.resource;
 
+import com.google.common.base.Charsets;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import veinthrough.test.util.PropertiesTest;
+
 import java.io.*;
 import java.net.URL;
 import java.util.Properties;
-
-import com.google.common.base.Charsets;
-
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
-import veinthrough.test.util.PropertiesTest;
 
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
- * <p>
- * classpath: .../test(project)/veinthrough-test(module)
+ *
+ * classpath: .../test(projects)/veinthrough-test(module/project)
  * the upper level path of src/main/java
- * <p>
- * Test:
+ * 
+ * Tests:
  * 1. 当需要读取当前路径(源代码目录)下的properties文件时，即在本地没有部署到具体服务器上的情况
- * FileInputStream(resource): resource必须是有src/main/resources/前缀
+ * FileInputStream(resource): resource必须以src/main/resources/作为前缀
  * 即读取的是.../src/main/resources/resource_properties_test.properties
  * 2. 当工程以war或者jar的形式部署到服务器后，在需要读取对应properties文件情况下，此时应该采取相对路径的读取方法
- * (1) 将resource转换成绝对路径, 但是没有必要转换成绝对路径, 不过我们可以得到它在jar中的路径,
+ * (1) classLoader.getResourceAsStream(resource): resource不需要以src/main/resources作为前缀
+ * (2) 将resource转换成绝对路径, 但是没有必要转换成绝对路径, 不过我们可以得到它在jar中的路径,
  * 即读取的是.../target/classes/resource_properties_test.properties
- * (2) classLoader.getResourceAsStream(resource): resource不需要src/main/resources前缀
  * 3. Properties(stream)
  * @see PropertiesTest#propertiesTest()
  * 4. Spring boot
@@ -35,40 +33,36 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * 当value出现中文时，会出现注入的值为乱码的现象, 原因是在SpringBoot自动加载application.properties时默认采用unicode编码方式
  */
 @Slf4j
-public class ResourcePropertiesTest extends AbstractUnitTester {
-    /* (non-Javadoc)
-     * @see UnitTester#test()
+public class ResourcePropertiesTest {
+    /**
+     * 当需要读取当前路径(源代码目录)下的properties文件时，即在本地没有部署到具体服务器上的情况
+     * FileInputStream(resource): resource必须是有src/main/resources/前缀
      */
-    @Override
-    public void test() {
-    }
-
-    // 1. 当需要读取当前路径(源代码目录)下的properties文件时，即在本地没有部署到具体服务器上的情况
-    // FileInputStream(resource): resource必须是有src/main/resources/前缀
     @Test
-    public void codesPropertiesTest() throws IOException {
+    public void srcPropertiesTest() throws IOException {
         // resource必须是有src/main/resources/前缀, 否则java.io.FileNotFoundException
+        // src/main/resources为相对project的路径
         String fileName = "src/main/resources/resource_properties_test.properties";
         printProperties(codesResourceStream(fileName));
     }
 
-    // 2.(1) 将resource转换成绝对路径, 但是没有必要转换成绝对路径, 不过我们可以得到它在jar中的路径
+    // 2.(1) 直接用classLoader.getResourceAsStream(resource)获取数据流
     @Test
-    public void targetPropertiesTest1() throws IOException {
+    public void targetPropertiesTest() throws IOException {
         // resource不需要src/main/resources/前缀
         String fileName = "resource_properties_test.properties";
-        String absoluteFilePath = absolutePathOfResource(fileName);
-        // /D:/Cloud/Projects/IdeaProjects/test/veinthrough-test/target/classes/resource_properties_test.properties
-        log.info(methodLog("absolute file path", absoluteFilePath));
-        printProperties(new FileInputStream(new File(absoluteFilePath)));
+        printProperties(targetResourceStream(fileName));
     }
 
-    // 2.(2) 直接用classLoader.getResourceAsStream(resource)获取数据流
+    // 2.(2) 将resource转换成绝对路径, 但是没有必要转换成绝对路径, 不过我们可以得到它在jar中的路径
     @Test
     public void targetPropertiesTest2() throws IOException {
         // resource不需要src/main/resources/前缀
         String fileName = "resource_properties_test.properties";
-        printProperties(targetResourceStream(fileName));
+        String absoluteFilePath = absolutePathOfResource(fileName);
+        // /D:/Cloud/Projects/IdeaProjects/methodReferenceTest/veinthrough-methodReferenceTest/target/classes/resource_properties_test.properties
+        log.info(methodLog("absolute file path", absoluteFilePath));
+        printProperties(new FileInputStream(new File(absoluteFilePath)));
     }
 
     /**
@@ -81,7 +75,7 @@ public class ResourcePropertiesTest extends AbstractUnitTester {
 
         log.info(methodLog("name", properties.getProperty("name"),
                 "password", properties.getProperty("password"),
-                //只能get字符串类型然后转换
+                // 只能get字符串类型然后转换
                 "age", "" + Integer.parseInt(properties.getProperty("age"))));
     }
 

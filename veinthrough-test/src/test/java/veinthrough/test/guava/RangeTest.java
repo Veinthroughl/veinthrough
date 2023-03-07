@@ -1,22 +1,17 @@
 package veinthrough.test.guava;
 
+import com.google.common.collect.Range;
 import veinthrough.test._enum.SIZE2;
 
 /**
- * @author veinthrough
- * <p>
- * This test demonstrate how to use Range
- * @see SIZE2
- * <p>---------------------------------------------------------
- * <pre>
+ * This methodReferenceTest demonstrate how to use Range: {@link SIZE2#forValue(Integer)}.
+ *
  * APIs:
- * 1. [static] Range.closedOpen(left, right)
- * 2. [static] Range.singlon(value)
- * 3. toString()
- * 4. lowerEndpoint()/upperEndpoint()
- * 5. contains(value)
- * </pre>
+ * 1. [static] {@link Range#closedOpen(Comparable, Comparable)}
+ * 2. [static] {@link Range#singleton(Comparable)}
+ * 3. {@link Range#lowerEndpoint()}/{@link Range#upperEndpoint()}
+ * 4. {@link Range#contains(Comparable)}
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "deprecation"})
 public class RangeTest {
 }

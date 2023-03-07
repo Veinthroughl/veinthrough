@@ -1,12 +1,11 @@
 package veinthrough.test.io.output;
 
+import com.google.common.base.Charsets;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-
-import com.google.common.base.Charsets;
-import lombok.extern.slf4j.Slf4j;
-import veinthrough.test.AbstractUnitTester;
 
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
@@ -14,8 +13,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
 /**
  * @author veinthrough
  * @see PrintStreamTest
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * PrintStream/PrintWriter:
  * 2个类的功能基本相同，PrintStream能做的PrintWriter也都能实现，并且PrintWriter的功能更为强大。
  * 但是由于PrintWriter出现的比较晚，较早的System.out使用的是PrintStream来实现的，所以为了兼容就没有废弃PrintStream。
@@ -28,9 +26,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *  PrintWriter是字符流，它没有处理raw byte的方法。
  *  4) PrintStream和PrintWriter的auto flushing机制有点不同，前者在输出byte数组、调用println方法、输出换行符或者byte值10（即\n）时自动调用flush方法;
  *  后者仅在调用println方法时发生auto flushing。
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * constructors:
  * 1. manually-configured auto-flush with OutputStream.
  *  PrintWriter(OutputStream out)
@@ -47,9 +43,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * [additional constructors compared with PrintStream]
  *  PrintWriter(Writer out)
  *  PrintWriter(Writer out, boolean autoFlush)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * PrintStream/DataOutputStream:
  *  (1) PrintStream是输出时采用的是用户指定的编码(创建PrintStream时指定的)，若没有指定，则采用系统默认的字符编码。
  *  而DataOutputStream则采用的是UTF-8。
@@ -64,22 +58,15 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *  而PrintStream的构造函数有许多: 和DataOutputStream一样，支持以输出流out作为“PrintStream输出 流”的构造函数;
  *  还支持以“File对象”或者“String类型的文件名对象”的构造函数。
  *  而且，在PrintStream的构造函数中，能“指定字符集”和“是否支持自动flush() 操作”
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *  
  * Tests:
  * 1. new a PrintWriter by a file name and charset.
  * 2. write chinese methodLog and check error.
- * </pre>
  */
 @Slf4j
-public class PrintWriterTest extends AbstractUnitTester {
+public class PrintWriterTest {
     private static final String FILE_NAME = "print_writer_test.txt";
 
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
     public void test() {
         try (PrintWriter pw = new PrintWriter(FILE_NAME, Charsets.UTF_8.name())) {
             pw.append('a');

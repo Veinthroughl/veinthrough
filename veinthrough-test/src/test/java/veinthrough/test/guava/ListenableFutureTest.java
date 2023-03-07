@@ -3,93 +3,74 @@ package veinthrough.test.guava;
 import com.google.common.util.concurrent.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.test.async.InterruptTest;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import static veinthrough.api.util.MethodLog.*;
+import static com.google.common.util.concurrent.Futures.*;
+import static veinthrough.api.util.Constants.MILLIS_PER_SECOND;
+import static veinthrough.api.util.MethodLog.exceptionLog;
+import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
- *   1. get a ListenableFuture:
- *     (1) [static][sync] Futures.immediateFuture(*)/ immediateFailedFuture(Throwable):
- *     ListenableFuture必须用线程来实现才是async,否则就是sync
- *     (2) [static][async] JdkFutureAdapters.listenInPoolThread(Future):
- *     Convert a Future to a ListenableFuture
- *     (3) [async] ListeningExecutorService.submit(Callable/Runnable)
- *   2. get a ListeningExecutorService:
- *   MoreExecutors.listeningDecorator(ExecutorService), decorate ExecutorService as ListeningExecutorService.
- *   3. FutureCallback<T>:
- *   (1) onFailure(Throwable e)
- *   (2) onSuccess(T value)
- *   4. Futures.addCallback(ListenableFuture<T>, FutureCallback<T>)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 1. get a {@link ListenableFuture}:
+ * (1) [static][sync] {@link Futures#immediateFuture(Object value)}/{@link Futures#immediateFailedCheckedFuture(Exception)}:
+ * ListenableFuture必须用线程来实现才是async,否则就是sync
+ * (2) [static][async] {@link JdkFutureAdapters#listenInPoolThread(Future)},
+ * Convert a Future to a ListenableFuture
+ * (3) [async] ListeningExecutorService.submit(Callable/Runnable)
+ * 2. get a {@link ListeningExecutorService}:
+ * {@link MoreExecutors#listeningDecorator(ExecutorService)}: decorate ExecutorService as ListeningExecutorService.
+ * 3. {@link FutureCallback}: FutureCallback<T>
+ * (1) onFailure(Throwable e)
+ * (2) onSuccess(T value)
+ * 4. Futures.addCallback(ListenableFuture<T>, FutureCallback<T>)
+ *   
  * Tests:
- *   1. Run a count task, and cancel it after a while:
- *     (1) Use Futures.immediateFuture() will lead to sync manner, that is,
- *     task-running and cancelling are both executed in main thread,
- *     so cancelling is run after task-running and in-effective.
- *     (2) Use JdkFutureAdapters.listenInPoolThread(Future)
- *   2. Failed with a exception: Futures.immediateFailedFuture(Throwable)
- *   3. Failed with a exception: run a async task throwing a exception.
- *   4. Other tests:
- *     (1) transform Future and add callback
- *     @see InterruptTest#interruptTest2()
+ * Run a count task, and cancel it after a while:
+ * 1. Use {@link Futures#immediateFuture(Object)}will lead to sync manner, that is,
+ * 在添加callback的时候已经执行完了。
+ * 2. Use {@link JdkFutureAdapters#listenInPoolThread(Future)}
+ * 3. Failed with a exception: {@link Futures#immediateFailedFuture(Throwable)}
+ * 4. Failed with a exception: run a async task throwing a exception.
+ * 5. Other tests:
+ * {@link InterruptTest#terminateByCallback()},
+ * {@link InterruptTest#terminateByCallback2()}.
  */
 @SuppressWarnings("UnstableApiUsage")
 @Slf4j
-public class ListenableFutureTest extends AbstractUnitTester {
-    private static final int COUNTER = 6;
+public class ListenableFutureTest {
+    private static final int THRESHOLD = 10;
     private static int i, j;
-    private static final ExecutorService pool =
-            Executors.newCachedThreadPool();
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
     private static final ListeningExecutorService listenablePool =
             MoreExecutors.listeningDecorator(pool);
 
-    @Override
-    public void test() {
-    }
-
-    private FutureCallback<Integer> futureCallbackForCount() {
-        return new FutureCallback<Integer>() {
-            @Override
-            public void onFailure(Throwable e) {
-                log.info(methodLog(
-                        "Failed with " + j
-                                + " for " + e.getClass().getSimpleName()));
-            }
-
-            @Override
-            public void onSuccess(Integer value) {
-                log.info(methodLog(
-                        "Succeeded with " + value));
-            }
-        };
-    }
-
-    // 1. Run a count task, and cancel it after a while:
-    // (1) Use Futures.immediateFuture() will lead to sync manner, that is,
-    // task-running and cancelling are both executed in main thread,
-    // so cancelling is run after task-running and in-effective.
+    /**
+     * Run a count task, and cancel it after a while:
+     * 1. Use {@link Futures#immediateFuture(Object)}will lead to sync manner, that is,
+     * 在添加callback的时候已经执行完了。
+     */
     @Test
     public void syncCancelTest() {
+        // 这里直接在main中执行
         ListenableFuture<Integer> future =
-                Futures.immediateFuture(count());
+                immediateFuture(count()); // 直接执行count()
 
-        Futures.addCallback(future, futureCallbackForCount());
+        addCallback(future, callbackForCount());
         waitForCountBySleep();
-        future.cancel(true);
+        log.info(methodLog("cancel", "" + future.cancel(true)));
     }
 
-    // 1. Run a count task, and cancel it after a while:
-    // (2) Use JdkFutureAdapters.listenInPoolThread(Future)
+    /**
+     * Run a count task, and cancel it after a while:
+     * 2. Use {@link JdkFutureAdapters#listenInPoolThread(Future)}
+     */
     @Test
     public void asyncCancelTest() {
         ListenableFuture<Integer> future =
@@ -97,36 +78,41 @@ public class ListenableFutureTest extends AbstractUnitTester {
                         pool.submit(this::count));
         pool.shutdown();
 
-        Futures.addCallback(future, futureCallbackForCount());
+        addCallback(future, callbackForCount());
         waitForCountBySleep();
-        future.cancel(true);
+        log.info(methodLog("cancel", "" + future.cancel(true)));
     }
 
-
-    // 2. Failed with a exception: Futures.immediateFailedFuture(Throwable)
+    /**
+     * Run a count task, and cancel it after a while:
+     * 3. Failed with a exception: {@link Futures#immediateFailedFuture(Throwable)}
+     */
     @Test
     public void syncExceptionTest() {
         ListenableFuture<Integer> future =
-                Futures.immediateFailedFuture(new ZeroDivisorException());
+                immediateFailedFuture(new ZeroDivisorException());
 
-        Futures.addCallback(future, futureCallbackForCount());
+        addCallback(future, callbackForCount());
     }
 
-    // 3. Failed with a exception: run a async task throwing a exception.
+    /**
+     * Run a count task, and cancel it after a while:
+     * 4. Failed with a exception: run a async task throwing a exception.
+     */
     @Test
     public void asyncExceptionTest() {
         ListenableFuture<Integer> future =
                 listenablePool.submit(this::divide);
         listenablePool.shutdown();
 
-        Futures.addCallback(future, futureCallbackForCount());
+        addCallback(future, callbackForCount());
     }
 
     private Integer count() {
         try {
-            for (i = 0; i < COUNTER; i++) {
+            for (i = 0; i < THRESHOLD; i++) {
                 log.info(methodLog(i));
-                Thread.sleep(1000);
+                Thread.sleep(MILLIS_PER_SECOND);
             }
         } catch (InterruptedException e) {
             log.info(exceptionLog(e));
@@ -134,11 +120,26 @@ public class ListenableFutureTest extends AbstractUnitTester {
         return i;
     }
 
+    private FutureCallback<Integer> callbackForCount() {
+        return new FutureCallback<Integer>() {
+            @Override
+            public void onFailure(Throwable e) {
+                log.info(methodLog(
+                        "Failed with " + j
+                                + " for " + e.getClass().getSimpleName()));
+            }
+            @Override
+            public void onSuccess(Integer value) {
+                log.info(methodLog("Succeeded with " + value));
+            }
+        };
+    }
+
     private void waitForCountBySleep() {
         try {
-            for (j = 0; j < COUNTER / 2; j++) {
+            for (j = 0; j < THRESHOLD / 2; j++) {
                 log.info(methodLog(j));
-                Thread.sleep(1000);
+                Thread.sleep(MILLIS_PER_SECOND);
             }
         } catch (InterruptedException e) {
             log.info(exceptionLog(e));

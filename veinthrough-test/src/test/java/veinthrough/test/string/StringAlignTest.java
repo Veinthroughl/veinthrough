@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import veinthrough.api.lang.StringAlign;
-import veinthrough.test.AbstractUnitTester;
 
 import java.util.stream.Stream;
 
@@ -15,12 +14,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * @see StringAlign
  */
 @Slf4j
-public class StringAlignTest extends AbstractUnitTester {
-
-    @Override
-    public void test() {
-    }
-
+public class StringAlignTest{
     @Test
     public void stringAlignTest() {
         String[] messages = {"JavaFun", "JavaFun!"};

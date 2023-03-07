@@ -2,18 +2,12 @@ package veinthrough.test.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * @author veinthrough
- * @see DateFormatTest
- *
- * <p>---------------------------------------------------------
- * <pre>
  * Tests:
  * 1. simulate a calendar app as follows:
  *  Sun Mon Tue Wed Thu Fri Sat
@@ -24,18 +18,9 @@ import java.util.GregorianCalendar;
  *  25  26  27  28  29  30  31
  * 2. Calculate calendar(by CalendarUtils) and display(by DateFormatUtils) now/tomorrow/next month/next year.
  * @see DateFormatTest#dateFormatTest()
- * </pre>
  */
 @Slf4j
-public class CalendarTest extends AbstractUnitTester {
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-
-    @Override
-    public void test() {
-    }
-
+public class CalendarTest {
     @Test
     public void calendarSimulateTest() {
         // construct d as current date

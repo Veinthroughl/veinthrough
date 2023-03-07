@@ -22,32 +22,26 @@ import static veinthrough.api.util.MethodLog.*;
 
 /**
  * @author veinthrough
- * <p>
+ *
  * 实现了一个Piper可以根据以下进行读写:
  * 职责(Duty): READ/WRITE/READ_WRITE
  * 模式(Mode): continued/once
  * 数据类型(data type): BYTE/CHAR
  *
- * <p>---------------------------------------------------------
- * <pre>
  * constructors: PipedReader same as PipedInputStream, PipedWriter same as PipedOutputStream
- * PipedInputStream():
- *  default pipe buffer size is 1024
+ * PipedInputStream(): default pipe buffer size is 1024
  * PipedInputStream(int pipeSize)
- * PipedInputStream(PipedOutputStream src):
- *  default pipe buffer size is 1024
+ * PipedInputStream(PipedOutputStream src): default pipe buffer size is 1024
  * PipedInputStream(PipedOutputStream src, int pipeSize)
+ * 
  * PipedOutputStream()
  * PipedOutputStream(PipedInputStream snk): PipedOutputStream没有buf
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * APIs:
  * 1. read()/receive():receive()为非public, read()为public; 并且从构造函数看PipedOutputStream没有buf，
  * 实际上基本所有的任务都是PipedInputStream来完成的, PipedOutputStream.write()实际上调用了连接的PipedInputStream.receive().
  * 2. PipedInputStream.available()
  * 3. NO PipedOutputStream.size()
- * </pre>
  */
 @Slf4j
 @SuppressWarnings("unused")
@@ -125,7 +119,7 @@ public class Piper
     }
 
     /**
-     * Connect to the peer Piper, automatically detect the effective .
+     * Connect to the peer Piper, automatically detect the effective peer duty.
      *
      * @param peer the peer Piper
      */
@@ -216,38 +210,25 @@ public class Piper
     // write每隔一段时间写入一段数据, 需要sleepy, 所以是sleepy;
     // read本身就是block, 而这个block依赖于write, 所以是hyper
     private void addWriteTask(Runnable task, boolean continued) {
-        if (!continued) {
-            tasks.add(() -> {
-                task.run();
-                return null;
-            });
-        } else {
-            tasks.add(() -> {
-                LoopRunnable.sleepyAtInterval(task,
-                        DEFAULT_DURATION, DEFAULT_INTERVAL)
-                        .run();
-                return null;
-            });
-        }
+        if (!continued) tasks.add(Executors.callable(task));
+        else tasks.add(Executors.callable(
+                LoopRunnable.sleepyAtInterval(
+                        task, DEFAULT_DURATION, DEFAULT_INTERVAL)));
     }
 
     private void addReadTask(Runnable task, boolean continued) {
-        if (!continued) {
-            tasks.add(() -> {
-                task.run();
-                return null;
-            });
-        } else {
-            tasks.add(() -> {
-                LoopRunnable.hyper(task, DEFAULT_DURATION)
-                        .run();
-                return null;
-            });
-        }
+
+        if (!continued) tasks.add(Executors.callable(task));
+        else tasks.add(Executors.callable(
+//                LoopRunnable.sleepyAtInterval(task, DEFAULT_DURATION, DEFAULT_INTERVAL)
+                LoopRunnable.hyper(task, DEFAULT_DURATION)));  // hyper, no interval
     }
 
-    // writer退出, reader会尽量读取pipe里面的数据,
-    // IOException: Read end dead/Pipe broken
+    /**
+     * 每次读取1024个bytes:
+     * writer退出, reader会尽量读取pipe里面的数据,
+     * IOException: Read end dead/Pipe broken
+     */
     private void readByteMessage() {
         byte[] buf = new byte[DEFAULT_PIPE_BUFFER_SIZE];
         try {
@@ -260,8 +241,11 @@ public class Piper
         }
     }
 
-    // writer退出, reader会尽量读取pipe里面的数据,
-    // IOException: Read end dead/Pipe broken
+    /**
+     * 每次读取1024个chars
+     * writer退出, reader会尽量读取pipe里面的数据,
+     * IOException: Read end dead/Pipe broken
+     */
     private void readCharMessage() {
         char[] buf = new char[DEFAULT_PIPE_BUFFER_SIZE];
         try {
@@ -274,6 +258,9 @@ public class Piper
         }
     }
 
+    /**
+     * 写入1026个bytes
+     */
     private void writeByteMessage() {
         String str = constructLongMessage(MAX_PIPE_BUFFER_SIZE + 2);
         try {
@@ -287,6 +274,9 @@ public class Piper
 
     }
 
+    /**
+     * 写入1026个chars
+     */
     private void writeCharMessage() {
         String str = constructLongMessage(MAX_PIPE_BUFFER_SIZE + 2);
         try {

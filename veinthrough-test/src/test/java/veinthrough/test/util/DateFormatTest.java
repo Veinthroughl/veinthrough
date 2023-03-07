@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import veinthrough.api.util.CalendarUtils;
 import veinthrough.api.util.DateFormatUtils;
-import veinthrough.test.AbstractUnitTester;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -12,24 +11,14 @@ import java.util.TimeZone;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
- * <p>
  * Calculate calendar(by CalendarUtils) and display(by DateFormatUtils) now/tomorrow/next month/next year.
- * @see CalendarUtils
- * @see DateFormatUtils
+ * {@link CalendarUtils}/{@link DateFormatUtils}
  */
 @Slf4j
-public class DateFormatTest extends AbstractUnitTester {
+public class DateFormatTest {
     private static final TimeZone SHANG_HAI = TimeZone.getTimeZone("Asia/Shanghai");
     private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS z";
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
+    
     @Test
     public void dateFormatTest() {
         long now = System.currentTimeMillis();

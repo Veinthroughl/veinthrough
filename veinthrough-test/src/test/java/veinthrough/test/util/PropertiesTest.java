@@ -2,7 +2,6 @@ package veinthrough.test.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 import veinthrough.test.env.EnvTest;
 
 import java.io.File;
@@ -10,45 +9,35 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
  * Test for Properties.
- * <p>
+ *
  * Comments:
- * (1) /Prefences
- * @see PreferencesTest
- * (2) /Environment
- * environment: 是系统级的环境变量，系统当中所有的进程都可以访问到
- * @see EnvTest
- * system property:是java应用程序自身指定的变量，通常我们可以在启动应用的时候指定的
- * <p>---------------------------------------------------------
- * </pre>
+ * 1. {@link Preferences}: {@link PreferencesTest}
+ * 2. environment: 是系统级的环境变量，系统当中所有的进程都可以访问到, {@link EnvTest}
+ * 3. system property: 是java应用程序自身指定的变量，通常我们可以在启动应用的时候指定的
  * Disadvantages:
- * 1. 没有标准的为配置文件命名的规则，容易造成配置文件名冲突。
- * 2. （似乎）只能处理字符串类型
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * (1) 没有标准的为配置文件命名的规则，容易造成配置文件名冲突。
+ * (2)（似乎）只能处理字符串类型
+ * 
  * Constructions:
- * Properties()
- * Properties(Properties defaults)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * {@link Properties#Properties()}
+ * {@link Properties#Properties(Properties)}
+ * 
  * Tests:
  * 1. get/put
  * 2. load/store
  * 3. 使用二级属性映射来实现默认属性; 也可以get时给一个默认值
- * </pre>
  */
 @SuppressWarnings("Duplicates")
 @Slf4j
-public class PropertiesTest extends AbstractUnitTester {
+public class PropertiesTest {
     private static final String DIR_NAME = "properties";
     private static final String FILE_NAME = "properties_test.xml";
     private static final int DEFAULT_LEFT = 0;
@@ -65,16 +54,9 @@ public class PropertiesTest extends AbstractUnitTester {
 
     private Properties properties;
 
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
     @Test
     public void propertiesTest() throws IOException {
-        // 使用二级属性映射来实现默认属性
+        // 使用二级属性映射来实现默认属性, 提前设置好了默认属性
         // Properties(Properties defaults)
         properties = new Properties(defaultProperties());
 

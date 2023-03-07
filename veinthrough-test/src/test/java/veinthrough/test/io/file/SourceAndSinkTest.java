@@ -1,17 +1,12 @@
 package veinthrough.test.io.file;
 
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 /**
  * How to use source and sink in guava to handle file.
  * @see veinthrough.test.guava.SourceAndSinkTest
  */
-public class SourceAndSinkTest extends AbstractUnitTester {
-    @Override
-    public void test() {
-    }
-
+public class SourceAndSinkTest {
     /**
      * @see veinthrough.test.guava.SourceAndSinkTest
      */

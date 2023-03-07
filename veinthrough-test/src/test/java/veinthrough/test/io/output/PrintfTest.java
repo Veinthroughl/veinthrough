@@ -1,33 +1,23 @@
 package veinthrough.test.io.output;
 
-import java.util.Date;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
+
+import java.util.Date;
 
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
  *
- * <p>pattern:
- * <pre>
- * __%__________________________________________________________________________conversion_______
- *      |                  |   |        |  |         |  |    |                |              |
- *      |___param index__$_|   |__flag__|  |__width__|  |    |__.__precision__|              |
+ * # pattern:
+ * # __%____________________________________________________________________________conversion_____
+ * #      |                  |   |        |  |         |  |    |                |              |
+ * #     |___param index__$_|   |__flag__|  |__width__|  |    |__.__precision__|              |
  *                                                      |_____t_____time conversion__________|
- * </pre>
  */
 @Slf4j
-public class PrintfTest extends AbstractUnitTester {
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
+public class PrintfTest {
     @Test
     public void hexTest() {
         String str = "ffffff00";

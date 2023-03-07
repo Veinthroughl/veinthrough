@@ -2,7 +2,6 @@ package veinthrough.test.string;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,40 +11,70 @@ import java.util.stream.Stream;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
- * <p>
  * How to split string.
- * <p>---------------------------------------------------------
- * <pre>
- * Tests:
- * 1. use split(regex), 参数支持正则表达式, 会处理每一个分隔符, 连续的分隔符中间会有""
- * 2. use StringTokenizer, 参数只是正常的String, 不支持正则表达式
- *   (1) true: 返回每个分割的字符串和分隔符
- *   (2) false; 丢弃所有分隔符, 只返回每个分割的字符串
+ *
+ * APIs
+ * 1. 使用 {@link String#split(String)}:
+ * 不返回分隔符, 连续分隔符会分别一个一个处理, 但是会忽略最后的连续分隔符
+ * 2. 使用 {@link StringTokenizer}
+ * (2) {@link StringTokenizer#StringTokenizer(String, String, boolean returnDelims)}
+ * > returnDelims为true: 返回分隔符, 且连续分隔符会分别一个一个处理(返回)
+ * > returnDelims为false: 不返回分隔符，连续分隔符当作整体一个处理
+ * (1) 使用{@link StringTokenizer#StringTokenizer(String, String)},
+ * 相当于returnDelims为false
  */
 @Slf4j
-public class StringSplitTest extends AbstractUnitTester {
+public class StringSplitTest {
     private static final String str = "Aa|||D|E||";
-    // "\\|"支持正则表达式, "|"不支持
+    @SuppressWarnings("RegExpEmptyAlternationBranch")
     private static final String delim = "|";
     private static final String delimRegex = "\\|";
     private static final String empty = "";
 
-    @Override
-    public void test() {
-    }
-
+    /**
+     * 1. 使用 {@link String#split(String)}:
+     * 不返回分隔符, 连续分隔符会分别一个一个处理, 但是会忽略最后的连续分隔符;
+     * 分割"Aa|||D|E||":
+     * \|(5个):  Aa, , , D, E;
+     * |:  A, a, |, |, |, D, |, E, |, |
+     */
     @Test
-    // 5个: "Aa", "", "", "D", "E"
     public void splitTest() {
         // "a", "", "", "D", "E"
         log.info(methodLog(
                 // "\\|"支持正则表达式, "|"不支持
-                printResult(str.split(delimRegex))));
+                delimRegex, arrayString(str.split(delimRegex)),
+                delim, arrayString(str.split(delim))));
     }
 
+    /**
+     * 2.(2) {@link StringTokenizer#StringTokenizer(String, String, boolean returnDelims)}
+     * returnDelims为false: 不返回分隔符，连续分隔符当作整体一个处理;
+     * 分割"Aa|||D|E||":
+     * 3个: "Aa", "D", "E"
+     */
     @Test
-    // 7个: "Aa", "", "", "D", "E", "", ""
+    public void falseTokenizerTest() {
+        List<String> strList = new ArrayList<>();
+        // Unless you ask StringTokenizer to give you the tokens,
+        // it silently discards multiple null tokens.
+        // StringTokenizer( str, delim, false) is the same as StringTokenizer( str, delim);
+        StringTokenizer st = new StringTokenizer(str, delim, false);
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            strList.add(token);
+        }
+        log.info(methodLog(
+                arrayString(strList.toArray(new String[0]))));
+    }
+
+    /**
+     * 2.(2) {@link StringTokenizer#StringTokenizer(String, String, boolean returnDelims)}
+     * returnDelims为true: 返回分隔符, 且连续分隔符会分别一个一个处理(返回),
+     * 分割"Aa|||D|E||", 可以在这基础上达到需要的效果:
+     * 7个: "Aa", "", "", "D", "E", "", ""
+     */
+    @Test
     public void trueTokenizerTest() {
         List<String> strList = new ArrayList<>();
         // Unless you ask StringTokenizer to give you the tokens,
@@ -56,7 +85,8 @@ public class StringSplitTest extends AbstractUnitTester {
             String token = st.nextToken();
             // 处理分隔符
             if (token.equals(delim)) {
-                // i表示token(包括分隔的字符串和分隔符)的数量, list.size()表示
+                // i表示token(包括分隔的字符串和分隔符)的数量,
+                // list.size()不包括分隔符
                 // (1) consecutive delimiters
                 if (strList.size() < ++i) {
                     strList.add(empty);
@@ -69,25 +99,10 @@ public class StringSplitTest extends AbstractUnitTester {
                 strList.add(token);
             }
         }
-        log.info(methodLog(
-                printResult(strList.toArray(new String[0]))));
+        log.info(methodLog(arrayString(strList.toArray(new String[0]))));
     }
 
-    @Test
-    // 3个: "Aa", "D", "E"
-    public void falseTokenizerTest() {
-        List<String> strList = new ArrayList<>();
-        // StringTokenizer( str, delim, false) is the same as StringTokenizer( str, delim);
-        StringTokenizer st = new StringTokenizer(str, delim, false);
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
-            strList.add(token);
-        }
-        log.info(methodLog(
-                printResult(strList.toArray(new String[0]))));
-    }
-
-    private String printResult(String[] strs) {
+    private String arrayString(String[] strs) {
         // noinspection OptionalGetWithoutIsPresent
         return Stream.of(strs)
                 .map(str -> ", " + str)

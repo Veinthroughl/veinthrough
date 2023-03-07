@@ -2,30 +2,22 @@ package veinthrough.test.string;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import static veinthrough.api.util.MethodLog.methodLog;
 
 @Slf4j
-public class ParseIntTest extends AbstractUnitTester {
-    @Override
-    public void test() {
-    }
-
+public class ParseIntTest {
+    /**
+     * "ffffff00":
+     * (1) use {@link Integer#parseInt(String)}, will overflow: java.lang.NumberFormatException
+     * (2) use {@link Integer#parseUnsignedInt(String)}
+     */
     @Test
     public void parseIntTest() {
         String str = "ffffff00";
-        // use parseInt, will overflow
-        // java.lang.NumberFormatException
+        // will overflow,java.lang.NumberFormatException
         log.info(methodLog(
-                String.format("%s: %#x", str, Integer.parseInt( str, 16))));
-    }
-
-    @Test
-    public void parseUnsignedIntTest() {
-        String str = "ffffff00";
-        // use parseUnsignedInt
-        log.info(methodLog(
-                String.format("%s: %#x", str, Integer.parseUnsignedInt( str, 16))));
+//                "parseInt", String.format("%s: %#x", str, Integer.parseInt(str, 16)),
+                "parseUnsignedInt", String.format("%s: %#x", str, Integer.parseUnsignedInt(str, 16))));
     }
 }

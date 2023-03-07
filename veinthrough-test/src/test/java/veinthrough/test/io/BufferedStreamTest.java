@@ -2,7 +2,6 @@ package veinthrough.test.io;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import java.io.*;
 import java.util.Arrays;
@@ -12,8 +11,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * constructors:
  * BufferedInputStream(InputStream in):
  *  default buffer size:8192
@@ -21,27 +19,22 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * BufferedOutputStream(OutputStream out):
  *  default buffer size:8192
  * BufferedOutputStream(OutputStream out, int bufferSize)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * APIs:
  * 1. BufferedInputStream.available():
  * only available bytes in buffer, not the available bytes of the whold bottom-layer stream.
  * [BufferedInputStream/BufferedReader/ByteArrayInputStream/CharArrayReader]
  * 2. NO BufferedOutputStream.size().
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * Tests:
  * 1. write and read
  * 2. write then flush and read
  * 3. mark/reset in read, [BufferedInputStream/BufferedReader/ByteArrayInputStream/CharArrayReader]
  * @see ByteArrayStreamTest#readTest()
  * @see CharArrayRWTest#readTest()
- * </pre>
  */
 @Slf4j
-public class BufferedStreamTest extends AbstractUnitTester {
+public class BufferedStreamTest {
     // correspond to "abcdefghijklmnopqrsttuvwxyz"
     private static final byte[] LETTER_BYTE_ARRAY = {
             0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
@@ -52,15 +45,7 @@ public class BufferedStreamTest extends AbstractUnitTester {
     private static final boolean FULL_FLUSH = false, MANUAL_FLUSH = true;
     private static final String fileName = "buffered_stream_test.txt";
 
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
-
-
-    /*
+    /**
      5 bytes Written: abcde
      0 bytes available
      5 bytes Written: fghij
@@ -76,7 +61,7 @@ public class BufferedStreamTest extends AbstractUnitTester {
         _test(FULL_FLUSH);
     }
 
-    /*
+    /**
      5 bytes Written: abcde
      5 bytes available
      5 bytes read: abcde

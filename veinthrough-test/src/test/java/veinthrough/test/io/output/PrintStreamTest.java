@@ -1,22 +1,17 @@
 package veinthrough.test.io.output;
 
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-
 import com.google.common.base.Charsets;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
+
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 import static veinthrough.api.util.MethodLog.exceptionLog;
 import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
- * @author veinthrough
- * @see PrintWriterTest
- * <p>---------------------------------------------------------
- * <pre>
  * PrintStream:
  * 1. extends FilterOutputStream
  * 2. System.out is a PrintStream
@@ -24,9 +19,9 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *    to check whether a IOException is thrown.
  * 4. auto-flush
  * 5. function of set charset/encoding in constructor
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
+ * PrintStream/PrintWriter: {@link PrintWriterTest}
+ *
  * constructors:
  * 1. manually-configured auto-flush with OutputStream
  *  PrintStream(OutputStream out)
@@ -37,9 +32,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
  *  PrintStream(String fileName, String charSetName)
  *  PrintStream(File file)
  *  PrintStream(File file, String charSetName)
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * PrintStream/DataOutputStream:
  * 1. PrintStream是输出时采用的是用户指定的编码(创建PrintStream时指定的)，若没有指定，则采用系统默认的字符编码。
  * 而DataOutputStream则采用的是UTF-8。
@@ -54,24 +47,14 @@ import static veinthrough.api.util.MethodLog.methodLog;
  * 而PrintStream的构造函数有许多: 和DataOutputStream一样，支持以输出流out作为“PrintStream输出 流”的构造函数;
  * 还支持以“File对象”或者“String类型的文件名对象”的构造函数。
  * 而且，在PrintStream的构造函数中，能“指定字符集”和“是否支持自动flush() 操作”
- * </pre>
- * <p>---------------------------------------------------------
- * <pre>
+ *
  * Tests:
  * 1. new a PrintStream by a file name and charset.
  * 2. write chinese methodLog and check error.
- * </pre>
  */
 @Slf4j
-public class PrintStreamTest extends AbstractUnitTester {
+public class PrintStreamTest {
     private static final String FILE_NAME = "print_stream_test.txt";
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
 
     @Test
     public void writeChineseTest() {

@@ -9,11 +9,13 @@ import java.util.Map;
 
 /**
  * @author veinthrough
- * <p>
- * A enum implementation, in which value use Range
+ *
+ * A SIZE implementation by {@link Range}.
+ * enum的详细说明见{@link SIZE}.
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated
 public enum SIZE2 {
-    INVALID(Integer.MIN_VALUE, 0),
     TOO_SMALL(0, 1),
     SMALL(1, 10),
     MEDIUM(10, 20),
@@ -24,7 +26,7 @@ public enum SIZE2 {
 //    private static final Range<Integer> INVALID_RANGE = Range.singleton(-1);
 
     @Getter
-    private Range<Integer> scope;
+    final private Range<Integer> scope;         // 作为key, 应该为final, 但这里因Range可修改, 作为key不太明智
     private static final Map<Range<Integer>, SIZE2> VALUE_MAP;
 
     static {
@@ -54,9 +56,8 @@ public enum SIZE2 {
                         .filter(scope ->
                                 scope.contains(value))
                         .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new InvalidSizeException("size should between(0, Integer.MAX_VALUE)")));
+                        .orElseThrow(() ->
+                                new InvalidSizeException("size should between(0, Integer.MAX_VALUE)")));
     }
 
     @NoArgsConstructor

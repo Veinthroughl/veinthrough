@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import veinthrough.test.AbstractUnitTester;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -14,27 +13,17 @@ import static veinthrough.api.util.MethodLog.methodLog;
 
 /**
  * @author veinthrough
- * <p>---------------------------------------------------------
- * <pre>
  * Tests:
- * 1. test available Charsets
+ * 1. methodReferenceTest available Charsets
  * 2. Use different charsets encode/decode 中文
  * US_ASCII can't encoding 中文
- * </pre>
  */
 @Slf4j
-public class CharsetTest extends AbstractUnitTester {
+public class CharsetTest {
     private static final Charset DEFAULT_CHARSET = Charset.defaultCharset();
     private static final Charset US_ASCII = Charset.forName(Charsets.US_ASCII.name());
     private static final Charset GB2312 = Charset.forName("GB2312");
     private static final Charset GBK = Charset.forName("GBK");
-
-    /* (non-Javadoc)
-     * @see UnitTester#test()
-     */
-    @Override
-    public void test() {
-    }
 
     @Test
     public void availableCharsetsTest() {
