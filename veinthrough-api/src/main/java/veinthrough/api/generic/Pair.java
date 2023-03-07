@@ -9,9 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Pair<T> {
-    @NonNull @Getter @Setter
+    @Getter
+    @Setter
     private T first;
-    @NonNull @Getter @Setter
+    @Getter
+    @Setter
     private T second;
 
     @SuppressWarnings("unused")
@@ -25,5 +27,9 @@ public class Pair<T> {
     public String toString() {
         return "<" + getFirst().toString() + ","
                 + getSecond().toString() + ">";
+    }
+
+    public static <T> Pair<T> of(T first, T second) {
+        return Pair.<T>builder().first(first).second(second).build();
     }
 }

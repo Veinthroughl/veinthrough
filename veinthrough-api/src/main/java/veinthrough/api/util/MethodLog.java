@@ -8,13 +8,12 @@ import java.util.Arrays;
 
 /**
  * @author veinthrough
- * <p>
  * Make log string for method.
  */
 @SuppressWarnings("SameParameterValue")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MethodLog {
-    private static final String VARIABLES_PRE = "Variables: {";
+    private static final String VARIABLES_PRE = "Details: {";
     private static final String SPACE_PRE = "    ";
     private static final String DELIM_MESSAGE = ", ";
     private static final String DELIM_NEXT_LINE = ",\n" + SPACE_PRE;
@@ -126,7 +125,7 @@ public class MethodLog {
         int length = vars.length;
         if (length != 0) {
             StringBuilder sb = new StringBuilder();
-            sb.append("Variables: {");
+            sb.append(VARIABLES_PRE);
             for (int i = 0; i < length; i += 2) {
                 sb.append(vars[i]).append(": ");
                 if (i + 1 < length) sb.append(vars[i + 1]);

@@ -7,36 +7,35 @@ import java.lang.reflect.Modifier;
 
 /**
  * @author veinthrough
- * <p>
- * This class give a implementation of printing a class declaration by reflect
- * Comments:
- * Generic/non-generic:
- * @see GenericClassAnalyzer#analyze(Class)
+ * This class give a implementation of printing a class declaration by reflect.
+ *
+ * 1. Generic/non-generic, {@link GenericClassAnalyzer#analyze(Class)}
  * (1) getSuperclass/getGenericSuperclass
  * (2) getInterfaces/getGenericInterfaces
  * (3) getAnnotatedInterfaces: 注解
- * <p>---------------------------------------------------------
- * <pre>
- * APIs:
- * [Class][static]Class<?> ClassforName(String className)
- * [Class]        Class<? super T> getSuperclass()
- * [Class]        String getName()/getSimpleName()
- * [Class]        [native]int getModifiers()
- * [Class]        Constructor<?>[] getDeclaredConstructors()/
- *                Method[] getDeclaredMethods()
- *                Field[] getDeclaredFields()
- * [Constructor]        String getName()
- * [Constructor]        int getModifiers()
- * [Constructor]        Class<?>[] getParameterTypes()
- * [Method]        String getName()
- * [Method]        Class<?> getReturnType()
- * [Method]        Class<?>[] getParameterTypes()
- * [Method]        int getModifiers()
- * [Field]        String getName()
- * [Field]        Class<?> getType()
- * [Field]        int getModifiers()
- * [Modifier][static]String toString(int mod)
- * </pre>
+ *
+ * 2. [static]获取Class: {@link Class#forName(String)}
+ * 3. Class APIs
+ * 父类: {@link Class#getSuperclass()}
+ * 名称: {@link Class#getName()}/{@link Class#getSimpleName()}
+ * [native]修饰符: {@link Class#getModifiers()}
+ * 构造函数: Constructor<?>[] getDeclaredConstructors()/
+ * 函数: Method[] getDeclaredMethods()
+ * 成员变量: Field[] getDeclaredFields()
+ * 4. Constructor APIs
+ * 名称: {@link Constructor#getName()}
+ * 修饰符: {@link Constructor#getModifiers()}
+ * 参数类型: {@link Constructor#getParameterTypes()}
+ * 5. Method APIs
+ * 名称: {@link Method#getName()}
+ * 返回类型: {@link Method#getReturnType()}
+ * 参数类型: {@link Method#getParameterTypes()}
+ * 修饰符: {@link Method#getModifiers()}
+ * 6. Field APIs
+ * 名称: {@link Field#getName()}
+ * 类型: {@link Field#getType()}
+ * 修饰符: {@link Field#getModifiers()}
+ * 7. [static]Modifier APIs: {@link Modifier#toString(int)}
  */
 public class ClassAnalyzer{
     private static final String SPACE = " ";

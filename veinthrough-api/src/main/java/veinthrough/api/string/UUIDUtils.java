@@ -7,6 +7,10 @@ import java.util.UUID;
 import static veinthrough.api.string.Regex.delimOfMacAddress;
 import static veinthrough.api.string.Regex.isMacAddress;
 
+/**
+ * {@link veinthrough.api.string.Regex#isMacAddress(String)}
+ * {@link veinthrough.api.string.Regex#delimOfMacAddress(String)}: delim of mac address can be ":"/"-"
+ */
 public class UUIDUtils {
     private static final int DASHED_UUID_LENGTH = 32;
     private static final int DASHED_UUID_DIV1 = 8;

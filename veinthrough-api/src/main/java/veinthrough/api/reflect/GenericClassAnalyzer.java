@@ -5,32 +5,30 @@ import java.util.Arrays;
 
 /**
  * @author veinthrough
- * <p>
- * Comments:
- * Generic/non-generic:
- * @see ClassAnalyzer#analyze(Class)
+ *
+ * This class give a implementation of printing a [generic] class declaration by reflect.
+ *
+ * 1. Non-generic/generic, {@link ClassAnalyzer#analyze(Class)}
  * (1) getSuperclass/getGenericSuperclass
  * (2) getInterfaces/getGenericInterfaces
  * (3) getAnnotatedInterfaces: 注解
- * <p>---------------------------------------------------------
- * <pre>
- * APIs:
- * 1. Type子类型:
- *   (1) Class, 描述具体类型
- *   (2) TypeVariable接口，描述类型变量(如T extends Comparable<? super T>)
- *   (3) WildcardType接口，描述通配符(如? super T)
- *   (4) ParameterizedType接口，描述泛型类或接口类型(如Comparable<? super T>)
- *   (5) GenericArrayType接口，描述泛型数组(如T[])
- * 2. Class's functions:
- *   (1) getTypeParameters()
- *   (2) getGenericSuperclass()
- *   (3) getGenericInterfaces()
- *   (4) getDeclaredMethods()
- * 3. Method's functions:
- *   (1) getModifiers
- *   (2) getTypeParameters(): static method可能才有type parameters
- *   (3) getGenericReturnType()
- *   (4) getGenericParameterTypes()
+ * 
+ * 2. Type子类型:
+ * (1) Class, 描述具体类型
+ * (2) TypeVariable接口，描述类型变量(如T extends Comparable<? super T>)
+ * (3) WildcardType接口，描述通配符(如? super T)
+ * (4) ParameterizedType接口，描述泛型类或接口类型(如Comparable<? super T>)
+ * (5) GenericArrayType接口，描述泛型数组(如T[])
+ * 3. Class APIs:
+ * 泛型参数: {@link Class#getTypeParameters()}
+ * 泛型父类: {@link Class#getGenericSuperclass()}
+ * 泛型接口: {@link Class#getGenericInterfaces()}
+ * 函数: {@link Class#getDeclaredMethods()}
+ * 3. Method's APIs:
+ * 描述符: {@link Method#getModifiers()}
+ * 泛型参数: {@link Method#getTypeParameters()}, 一般static method才有type parameters
+ * 泛型返回类型: {@link Method#getGenericReturnType()}
+ * 泛型参数类型: {@link Method#getGenericParameterTypes()}
  */
 public class GenericClassAnalyzer {
     @SuppressWarnings("unused")

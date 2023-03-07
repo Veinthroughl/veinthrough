@@ -10,27 +10,27 @@ import static veinthrough.api.util.MethodLog.*;
 
 /**
  * @author veinthrough
- * <p>
+ *
  * 将一个Callable包装成一个循环执行的Callable, 直到condition/timeout/interrupted
  * hyper(8 functions): condition/timeout --X-- consumer
  * sleepy(16 functions): condition/timeout --X-- interval --X-- consumer
- * <p>---------------------------------------------------------
- * <pre>
+ * 
  * 1. Terminate a Runnable/Callable:
- *   (1) condition
- *   (2) timeout
- *   (3) interrupt
- *   (4) endless loop: 不终止
+ * (1) condition
+ * (2) timeout
+ * (3) interrupt
+ * (4) endless loop: 不终止
  * 2. 循环方式:
- *   (1) No sleep() in while, 使用!Thread.interrupted()
- *   (2) With sleep(), no need to use !Thread.interrupted(),
- *   as sleep will clear interrupted sign
- *   (3) With sleep() and re-interrupt() if InterruptedException,
- *   try必须放在while内, 如果try放在while外, 会立刻跳出, !Thread.interrupted()就没有意义
+ * (1) No sleep() in while, 使用!Thread.interrupted(),
+ * 这里不需要try/catch InterruptedException因为只有像sleep()才会抛出这个异常
+ * (2) With sleep(), no need to use !Thread.interrupted(),
+ * as sleep will clear interrupted sign
+ * (3) With sleep() and re-interrupt() if InterruptedException,
+ * try必须放在while内, 如果try放在while外, 会立刻跳出, !Thread.interrupted()就没有意义
  * 3. 是否有interval
  * 4. 循环完成是否执行的动作consumer
- *   (1) 没有consumer就返回Callable<T>, 因为要返回执行结果
- *   (2) 如果有consumer, 直接在consumer消耗result, 不需要返回执行结果, 所以返回Runnable
+ * (1) 没有consumer就返回Callable<T>, 因为要返回执行结果
+ * (2) 如果有consumer, 直接在consumer消耗result, 不需要返回执行结果, 所以返回Runnable
  */
 
 @Slf4j
@@ -42,8 +42,6 @@ public class LoopCallable extends LoopTask {
         return () -> {
             T result = null;
             log.debug(methodLog("Loop begin"));
-            // [?] 返回Runnable就需要处理Exception
-            // [?] 返回Callable就不需要处理Exception
             try {
                 while (!condition.met() && !Thread.interrupted()) {
                     log.debug(methodLog("Loop ing ..."));
@@ -58,7 +56,7 @@ public class LoopCallable extends LoopTask {
         };
     }
 
-    // 2.(1) No sleep() in while, 使用!Thread.interrupted()
+    // 2.(1)
     // Terminate: condition/interrupted
     public static <T> Callable<T> hyper(Callable<T> task, Condition condition) {
         return () -> {
@@ -73,13 +71,13 @@ public class LoopCallable extends LoopTask {
         };
     }
 
-    // 2.(1) No sleep() in while, 使用!Thread.interrupted()
+    // 2.(1)
     // Terminate: timeout/interrupted
     public static <T> Runnable hyper(Callable<T> task, long time, Consumer<T> consumer) {
         return hyper(task, timeout(time), consumer);
     }
 
-    // 2.(1) No sleep() in while, 使用!Thread.interrupted()
+    // 2.(1)
     // Terminate: timeout/interrupted
     public static <T> Callable<T> hyper(Callable<T> task, long time) {
         return hyper(task, timeout(time));
@@ -100,13 +98,13 @@ public class LoopCallable extends LoopTask {
         return hyper(task, timeoutOrCondition(condition, time));
     }
 
-    // 2.(1) No sleep() in while, 使用!Thread.interrupted()
+    // 2.(1)
     // Terminate: interrupted
     public static <T> Runnable hyper(Callable<T> task, Consumer<T> consumer) {
         return hyper(task, NEVER, consumer);
     }
 
-    // 2.(1) No sleep() in while, 使用!Thread.interrupted()
+    // 2.(1)
     // Terminate: interrupted
     public static <T> Callable<T> hyper(Callable<T> task) {
         return hyper(task, NEVER);
@@ -139,7 +137,7 @@ public class LoopCallable extends LoopTask {
         };
     }
 
-    // 2.(2) With sleep(), no need to use !Thread.interrupted()
+    // 2.(2)
     // terminate: condition/interrupted
     public static <T> Callable<T> sleepyAtInterval(Callable<T> task, Condition condition,
                                                    long interval) {
@@ -255,7 +253,7 @@ public class LoopCallable extends LoopTask {
         return sleepyAtInterval(task, NEVER, DEFAULT_INTERVAL);
     }
 
-    // 3. With sleep() and re-interrupt() if InterruptedException
+    // 2.(3) With sleep() and re-interrupt() if InterruptedException
     @Deprecated
     public static <T> Runnable sleepyAndInterruptedAtInterval(
             Callable<T> task, Condition condition,
@@ -285,7 +283,7 @@ public class LoopCallable extends LoopTask {
         };
     }
 
-    // 3. With sleep() and re-interrupt() if InterruptedException
+    // 2.(3) With sleep() and re-interrupt() if InterruptedException
     @Deprecated
     public static <T> Callable<T> sleepyAndInterruptedAtInterval(
             Callable<T> task, Condition condition,
@@ -309,7 +307,7 @@ public class LoopCallable extends LoopTask {
         };
     }
 
-    // 3. With sleep() and re-interrupt() if InterruptedException
+    // 2.(3) With sleep() and re-interrupt() if InterruptedException
     @Deprecated
     public static <T> Runnable sleepyAndInterruptedAtInterval(
             Callable<T> task,
@@ -318,7 +316,7 @@ public class LoopCallable extends LoopTask {
         return sleepyAndInterruptedAtInterval(task, timeout(time), interval, consumer);
     }
 
-    // 3. With sleep() and re-interrupt() if InterruptedException
+    // 2.(3) With sleep() and re-interrupt() if InterruptedException
     @Deprecated
     public static <T> Callable<T> sleepyAndInterruptedAtInterval(
             Callable<T> task,

@@ -28,8 +28,8 @@ public class CircularArrayQueue<E> extends AbstractQueue<E> {
     public CircularArrayQueue(int capacity) {
         elements = new Object[capacity];
         count = 0;
-        head = 0;
-        tail = 0;
+        head = 0; // head为下一个出队元素, 即第一个元素
+        tail = 0; // tail为下一个入队元素, 即最后一个元素的后一个
     }
 
     public boolean offer(E newElement) {
@@ -46,16 +46,17 @@ public class CircularArrayQueue<E> extends AbstractQueue<E> {
 
     public E poll() {
         if (count == 0) return null;
-        E r = peek();
+        // noinspection unchecked
+        E r = (E) elements[head];
         head = (head + 1) % elements.length;
         count--;
         modCount++;
         return r;
     }
 
-    @SuppressWarnings("unchecked")
     public E peek() {
         if (count == 0) return null;
+        // noinspection unchecked
         return (E) elements[head];
     }
 

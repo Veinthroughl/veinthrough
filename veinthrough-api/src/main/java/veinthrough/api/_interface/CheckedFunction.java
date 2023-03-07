@@ -1,16 +1,31 @@
 package veinthrough.api._interface;
 
-import org.apache.commons.lang3.tuple.Pair;
 import veinthrough.api.generic.Either;
+import veinthrough.api.generic.Tuple;
+
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
+/**
+ * 包装函数接口(因为可能出现异常).
+ *
+ * 1. 遇到CheckedException转化成RuntimeException直接终止,
+ * 因为多线程lambda中出现异常只是执行该lambda的线程悄悄结束
+ * 2. 将CheckedException包装放入Either中,
+ * (1) 未抛出异常, 返回值放入Either.right;
+ * (2) 抛出异常:
+ * > {@link #lift(CheckedFunction)}: exception放入Either.left;
+ * > {@link #liftWithInput(CheckedFunction)}: input/exception用Pair包装放入Either.left.
+ */
 @FunctionalInterface
 @SuppressWarnings("unused")
 public interface CheckedFunction<T, R> {
     R apply(T t) throws Exception;
 
-    static <T,R> Function<T,R> wrap(CheckedFunction<T, R> function) {
+    /**
+     * 1.
+     */
+    static <T, R> Function<T, R> wrap(CheckedFunction<T, R> function) {
         return t -> {
             try {
                 return function.apply(t);
@@ -20,8 +35,9 @@ public interface CheckedFunction<T, R> {
         };
     }
 
-    // 2. 将CheckedException包装成RuntimeException
-    // 遇到CheckedException直接终止
+    /**
+     * 1.
+     */
     static <T> ToIntFunction<T> wrapInt(CheckedFunction<T,Integer> function) {
         return t -> {
             try {
@@ -32,10 +48,9 @@ public interface CheckedFunction<T, R> {
         };
     }
 
-    // 3. 将CheckedException放在返回值Either中,
-    // 未抛出异常, 放入Either.right; 抛出异常, 放入Either.left
-    // (1) Either.right只包含Exception
-    // (2) Either.right包含出错的value和Exception, 使用Pair包装
+    /**
+     * 2.(1) Either.left只包含exception
+     */
     static <T, R> Function<T, Either> lift(CheckedFunction<T, R> function) {
         return t -> {
             try {
@@ -46,12 +61,15 @@ public interface CheckedFunction<T, R> {
         };
     }
 
-    static <T, R> Function<T, Either> liftWithValue(CheckedFunction<T, R> function) {
+    /**
+     * 2.(2) Either.left包含出错的input和exception, 使用Pair包装
+     */
+    static <T, R> Function<T, Either> liftWithInput(CheckedFunction<T, R> function) {
         return t -> {
             try {
                 return Either.right(function.apply(t));
             } catch (Exception ex) {
-                return Either.left(Pair.of(ex, t));
+                return Either.left(Tuple.of(ex, t));
             }
         };
     }

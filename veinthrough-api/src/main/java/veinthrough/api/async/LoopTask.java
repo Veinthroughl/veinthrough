@@ -11,7 +11,7 @@ import static veinthrough.api.util.MethodLog.methodLog;
 abstract class LoopTask {
     protected static final int DEFAULT_INTERVAL = MILLIS_PER_SECOND;
     protected static final Condition NEVER = never();
-    protected static final Runnable NOTHING = () -> {};
+    protected static final Runnable NO_OP = () -> {};
 
     protected static long durationSince(long startTime) {
         return System.currentTimeMillis() - startTime;

@@ -12,19 +12,19 @@ import java.util.List;
 import static veinthrough.api.util.MethodLog.exceptionLog;
 
 /**
- * This class give a implementation of printing all fields and coordinated values of a object
  * @author veinthrough
- * <p>---------------------------------------------------------
- * <pre>
- * APIs:
- * [Class]        native boolean isArray()
- * [Class]        native Class<?> getComponentType():only be called by a array type
- * [Class]        native boolean isPrimitive():是否是基本类型
- * [Class]        Field[] getDeclaredFields()
- * [Class]        native Class<? super T> getSuperclass()
- * [Field]        Object get(Object obj):获取对象obj的field对应的域值
- * [AccessibleObject][static]setAccessible(AccessibleObject[] array, boolean flag)
- * </pre>
+ *
+ * This class give a implementation of printing all fields and coordinated values of a object.
+ *
+ * 1. Class APIs:
+ * [native]是否是数组: {@link Class#isArray()}
+ * [native]数组类型: {@link Class#getComponentType()}, only be called by a array type
+ * [native]是否是基本类型: {@link Class#isPrimitive()}
+ * 成员变量: {@link Class#getDeclaredFields()}
+ * [native]父类: {@link Class#getSuperclass()}
+ * 2. Field APIs: 
+ * 某个对象的某个Field的值: {@link Field#get(Object)}
+ * [static]设置Fields是否可访问: {@link AccessibleObject#setAccessible(AccessibleObject[], boolean)}
  */
 @Slf4j
 public class ObjectAnalyzer{
